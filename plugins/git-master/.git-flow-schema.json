@@ -1,0 +1,108 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Git Flow Master Configuration Schema",
+  "type": "object",
+  "properties": {
+    "commit": {
+      "type": "object",
+      "properties": {
+        "types": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "description": { "type": "string" },
+              "emoji": { "type": "string" },
+              "semverBump": { "enum": ["MAJOR", "MINOR", "PATCH", "NONE"] }
+            }
+          }
+        },
+        "scopes": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        },
+        "rules": {
+          "type": "object",
+          "properties": {
+            "subjectMinLength": { "type": "number" },
+            "subjectMaxLength": { "type": "number" },
+            "bodyLineLength": { "type": "number" },
+            "requireBodyForTypes": { "type": "array", "items": { "type": "string" } },
+            "allowBreakingChange": { "type": "array", "items": { "type": "string" } }
+          }
+        }
+      }
+    },
+    "release": {
+      "type": "object",
+      "properties": {
+        "bumpMajor": { "type": "array", "items": { "type": "string" } },
+        "bumpMinor": { "type": "array", "items": { "type": "string" } },
+        "bumpPatch": { "type": "array", "items": { "type": "string" } },
+        "changelogFile": { "type": "string" },
+        "versionFiles": { "type": "array", "items": { "type": "string" } },
+        "tagNameFormat": { "type": "string" },
+        "tagMessageFormat": { "type": "string" }
+      }
+    },
+    "branch": {
+      "type": "object",
+      "properties": {
+        "naming": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        },
+        "mainBranch": { "type": "string" },
+        "developBranch": { "type": "string" }
+      }
+    },
+    "pr": {
+      "type": "object",
+      "properties": {
+        "baseBranch": { "type": "string" },
+        "template": { "type": "string" },
+        "labels": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        },
+        "mergeMethod": { "enum": ["merge", "squash", "rebase"] },
+        "deleteAfterMerge": { "type": "boolean" }
+      }
+    },
+    "hooks": {
+      "type": "object",
+      "properties": {
+        "preCommit": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "lint": { "type": "boolean" },
+            "typecheck": { "type": "boolean" },
+            "test": { "type": "boolean" },
+            "secretScan": { "type": "boolean" }
+          }
+        },
+        "commitMsg": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "validate": { "type": "boolean" },
+            "enforceConventional": { "type": "boolean" }
+          }
+        }
+      }
+    },
+    "conflict": {
+      "type": "object",
+      "properties": {
+        "strategies": {
+          "type": "object",
+          "additionalProperties": {
+            "enum": ["union-merge", "favor-incoming", "favor-current", "interactive"]
+          }
+        },
+        "alwaysManual": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  }
+}
