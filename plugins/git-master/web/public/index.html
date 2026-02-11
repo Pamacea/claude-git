@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Git Flow Master - Web Interface</title>
+  <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+  <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app" x-data="gitFlowApp()" x-init="init()">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h1>Git Flow Master</h1>
+        <span class="status" :class="{ online: isOnline }" x-text="isOnline ? 'Connected' : 'Offline'"></span>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="#dashboard" class="nav-item" :class="{ active: currentView === 'dashboard' }" @click.prevent="currentView = 'dashboard'">
+          <span>Dashboard</span>
+        </a>
+        <a href="#repositories" class="nav-item" :class="{ active: currentView === 'repositories' }" @click.prevent="currentView = 'repositories'">
+          <span>Repositories</span>
+        </a>
+        <a href="#conventions" class="nav-item" :class="{ active: currentView === 'conventions' }" @click.prevent="currentView = 'conventions'">
+          <span>Conventions</span>
+        </a>
+        <a href="#config" class="nav-item" :class="{ active: currentView === 'config' }" @click.prevent="currentView = 'config'">
+          <span>Config</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <p class="text-sm text-muted">Versioned Release Convention</p>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Error Banner -->
+      <div x-show="error" class="error-banner" x-cloak>
+        <span x-text="error"></span>
+        <button class="btn-icon" @click="clearError()">x</button>
+      </div>
+
+      <!-- Dashboard View -->
+      <div x-show="currentView === 'dashboard'" class="view">
+        <header class="view-header">
+          <h2>Dashboard</h2>
+          <button class="btn btn-primary" @click="scanRepositories()">
+            Scan Repositories
+          </button>
+        </header>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="stat-value" x-text="repositories.length"></span>
+            <span class="stat-label">Repositories</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-value" x-text="activeHooksCount"></span>
+            <span class="stat-label">Active Hooks</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-value" x-text="totalCommits"></span>
+            <span class="stat-label">Total Commits</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-value" x-text="conventionCompliance + '%'"></span>
+            <span class="stat-label">Convention Compliance</span>
+          </div>
+        </div>
+
+        <div class="recent-commits">
+          <h3>Recent Commits (Versioned Release Convention)</h3>
+          <div class="commit-list">
+            <template x-for="commit in recentCommits" :key="commit.hash + commit.time">
+              <div class="commit-item">
+                <span class="commit-type" :class="commit.type.toLowerCase()" x-text="commit.type"></span>
+                <template x-if="commit.type !== 'other'">
+                  <span class="commit-project" x-text="commit.project + ' - ' + commit.version"></span>
+                </template>
+                <template x-if="commit.type === 'other'">
+                  <span class="commit-message" x-text="commit.message"></span>
+                </template>
+                <span class="commit-repo text-muted" x-text="commit.repo"></span>
+              </div>
+            </template>
+            <template x-if="recentCommits.length === 0">
+              <div class="empty-state">
+                <p>No commits yet. Scan repositories to see recent commits.</p>
+              </div>
+            </template>
+          </div>
+        </div>
+      </div>
+
+      <!-- Repositories View -->
+      <div x-show="currentView === 'repositories'" class="view">
+        <header class="view-header">
+          <h2>Repositories</h2>
+          <div class="view-actions">
+            <input type="text" placeholder="Search directory..." class="input" x-model="scanDir">
+            <button class="btn btn-primary" @click="scanRepositories()">
+              Scan
+            </button>
+          </div>
+        </header>
+
+        <div class="repo-list">
+          <template x-for="repo in repositories" :key="repo.path">
+            <div class="repo-card">
+              <div class="repo-header">
+                <h3 x-text="repo.name"></h3>
+                <span class="repo-branch" x-text="repo.branch"></span>
+              </div>
+
+              <div class="repo-info">
+                <p class="text-muted text-sm" x-text="repo.path"></p>
+                <template x-if="repo.remotes && repo.remotes.origin">
+                  <p class="text-sm">
+                    <a :href="repo.remotes.origin" target="_blank" x-text="repo.remotes.origin"></a>
+                  </p>
+                </template>
+              </div>
+
+              <div class="repo-hooks">
+                <span class="badge" :class="{ success: hasHooks(repo.path), warning: !hasHooks(repo.path) }">
+                  <span x-text="hasHooks(repo.path) ? 'Hooks Installed' : 'No Hooks'"></span>
+                </span>
+              </div>
+
+              <div class="repo-actions">
+                <button class="btn btn-sm" @click="toggleHooks(repo)" x-text="hasHooks(repo.path) ? 'Disable Hooks' : 'Enable Hooks'"></button>
+                <button class="btn btn-sm btn-secondary" @click="viewRepo(repo)">View</button>
+                <button class="btn btn-sm btn-primary"
+                        @click="selectedRepo = repo.path; openCommitModal()"
+                        :disabled="!hasHooks(repo.path)">
+                  Commit
+                </button>
+              </div>
+
+              <div class="repo-commits" x-show="repo.recentCommits && repo.recentCommits.length">
+                <h4>Recent Commits</h4>
+                <div class="mini-commit-list">
+                  <template x-for="commit in repo.recentCommits.slice(0, 5)" :key="commit">
+                    <div class="mini-commit-item" x-text="safeDisplay(commit)"></div>
+                  </template>
+                </div>
+              </div>
+            </div>
+          </template>
+          <template x-if="repositories.length === 0">
+            <div class="empty-state">
+              <p>No repositories found. Click "Scan" to search for Git repositories.</p>
+            </div>
+          </template>
+        </div>
+      </div>
+
+      <!-- Conventions View -->
+      <div x-show="currentView === 'conventions'" class="view">
+        <header class="view-header">
+          <h2>Versioned Release Convention</h2>
+          <button class="btn btn-primary" @click="saveConventions()">
+            Save
+          </button>
+        </header>
+
+        <div class="conventions-editor">
+          <div class="convention-types">
+            <h3>Commit Types</h3>
+            <div class="type-grid">
+              <template x-for="(typeConfig, type) in config.commit?.types" :key="type">
+                <div class="type-card">
+                  <div class="type-header">
+                    <span class="badge" x-text="type"></span>
+                    <span x-text="typeConfig.emoji || ''"></span>
+                  </div>
+                  <p x-text="typeConfig.description"></p>
+                  <span class="text-sm text-muted">SemVer: <strong x-text="typeConfig.semverBump"></strong></span>
+                  <div class="type-format">
+                    <code x-text="typeConfig.format"></code>
+                  </div>
+                </div>
+              </template>
+            </div>
+          </div>
+
+          <div class="convention-rules">
+            <h3>Validation Rules</h3>
+            <div class="rule-list">
+              <label class="rule-item">
+                <span>Subject min length</span>
+                <input type="number" class="input input-sm" x-model="config.commit?.rules?.subjectMinLength">
+              </label>
+              <label class="rule-item">
+                <span>Subject max length</span>
+                <input type="number" class="input input-sm" x-model="config.commit?.rules?.subjectMaxLength">
+              </label>
+              <label class="rule-item">
+                <span>Project name max length</span>
+                <input type="number" class="input input-sm" x-model="config.commit?.rules?.projectNameMaxLength">
+              </label>
+              <label class="rule-item checkbox">
+                <input type="checkbox" x-model="config.commit?.rules?.requireVersion">
+                <span>Require version in title</span>
+              </label>
+              <label class="rule-item checkbox">
+                <input type="checkbox" x-model="config.commit?.rules?.requireProjectName">
+                <span>Require project name</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="convention-amend">
+            <h3>Amend Settings</h3>
+            <div class="rule-list">
+              <label class="rule-item checkbox">
+                <input type="checkbox" x-model="config.commit?.amend?.enabled">
+                <span>Enable commit amend</span>
+              </label>
+              <label class="rule-item checkbox">
+                <input type="checkbox" x-model="config.commit?.amend?.keepVersion">
+                <span>Keep same version when amending</span>
+              </label>
+              <label class="rule-item">
+                <span>Max amends per commit</span>
+                <input type="number" class="input input-sm" x-model="config.commit?.amend?.maxAmends">
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Config View -->
+      <div x-show="currentView === 'config'" class="view">
+        <header class="view-header">
+          <h2>Configuration</h2>
+          <button class="btn btn-primary" @click="saveConfig()">
+            Save Config
+          </button>
+        </header>
+
+        <div class="config-editor">
+          <div class="config-section">
+            <h3>General Settings</h3>
+            <label class="form-group">
+              <span>Project Name</span>
+              <input type="text" class="input" x-model="config.projectName" placeholder="My Project">
+            </label>
+            <label class="form-group">
+              <span>Main Branch</span>
+              <input type="text" class="input" x-model="config.branch?.mainBranch">
+            </label>
+            <label class="form-group">
+              <span>Develop Branch</span>
+              <input type="text" class="input" x-model="config.branch?.developBranch">
+            </label>
+          </div>
+
+          <div class="config-section">
+            <h3>Pre-Commit Hooks</h3>
+            <label class="form-group checkbox">
+              <input type="checkbox" x-model="config.hooks?.preCommit?.lint">
+              <span>Run Linting</span>
+            </label>
+            <label class="form-group checkbox">
+              <input type="checkbox" x-model="config.hooks?.preCommit?.typecheck">
+              <span>Run Type Check</span>
+            </label>
+            <label class="form-group checkbox">
+              <input type="checkbox" x-model="config.hooks?.preCommit?.test">
+              <span>Run Tests</span>
+            </label>
+            <label class="form-group checkbox">
+              <input type="checkbox" x-model="config.hooks?.preCommit?.secretScan">
+              <span>Scan for Secrets</span>
+            </label>
+          </div>
+
+          <div class="config-section">
+            <h3>Commit Message Hook</h3>
+            <label class="form-group checkbox">
+              <input type="checkbox" x-model="config.hooks?.commitMsg?.enabled">
+              <span>Enable commit message validation</span>
+            </label>
+            <label class="form-group checkbox">
+              <input type="checkbox" x-model="config.hooks?.commitMsg?.enforceVersionedFormat">
+              <span>Enforce Versioned Release format</span>
+            </label>
+            <label class="form-group checkbox">
+              <input type="checkbox" x-model="config.hooks?.commitMsg?.allowAmend">
+              <span>Allow amend commits</span>
+            </label>
+          </div>
+
+          <div class="config-section">
+            <h3>Release Settings</h3>
+            <label class="form-group">
+              <span>Changelog File</span>
+              <input type="text" class="input" x-model="config.release?.changelogFile">
+            </label>
+            <label class="form-group">
+              <span>Tag Name Format</span>
+              <input type="text" class="input" x-model="config.release?.tagNameFormat">
+              <span class="text-muted text-sm">Use {version} as placeholder</span>
+            </label>
+          </div>
+
+          <div class="config-section">
+            <h3>Raw Config (JSON)</h3>
+            <textarea class="textarea" rows="20" x-model="rawConfig"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Commit Modal (Versioned Release Convention) -->
+      <div x-show="showCommitModal" class="modal" :class="{ active: showCommitModal }" x-cloak>
+        <div class="modal-content modal-large">
+          <div class="modal-header">
+            <h3>Create Versioned Commit</h3>
+            <button class="btn-icon" @click="showCommitModal = false">x</button>
+          </div>
+
+          <div class="modal-body">
+            <div class="form-group">
+              <label>Repository</label>
+              <select class="input" x-model="selectedRepo" @change="loadSuggestedVersions()">
+                <option value="">Select repository...</option>
+                <template x-for="repo in repositories" :key="repo.path">
+                  <option :value="repo.path" x-text="repo.name"></option>
+                </template>
+              </select>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Commit Type</label>
+                <select class="input" x-model="commitForm.type" @change="onTypeChange()">
+                  <option value="RELEASE">RELEASE - Major release (breaking)</option>
+                  <option value="UPDATE">UPDATE - Minor update (features)</option>
+                  <option value="PATCH">PATCH - Patch (bug fixes)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Project Name</label>
+                <input type="text" class="input" x-model="commitForm.project"
+                       placeholder="My Project" maxlength="50">
+              </div>
+
+              <div class="form-group">
+                <label>Version</label>
+                <div class="version-input-group">
+                  <input type="text" class="input" x-model="commitForm.version"
+                         placeholder="v1.0.0" pattern="v\d+\.\d+\.\d+">
+                  <template x-if="suggestedVersions">
+                    <div class="version-suggestions">
+                      <span class="text-sm text-muted">Suggested:</span>
+                      <button type="button" class="btn btn-xs"
+                              @click="commitForm.version = suggestedVersions.RELEASE"
+                              x-show="suggestedVersions.RELEASE">
+                        <span class="badge badge-major">RELEASE</span>
+                        <span x-text="suggestedVersions.RELEASE"></span>
+                      </button>
+                      <button type="button" class="btn btn-xs"
+                              @click="commitForm.version = suggestedVersions.UPDATE"
+                              x-show="suggestedVersions.UPDATE">
+                        <span class="badge badge-minor">UPDATE</span>
+                        <span x-text="suggestedVersions.UPDATE"></span>
+                      </button>
+                      <button type="button" class="btn btn-xs"
+                              @click="commitForm.version = suggestedVersions.PATCH"
+                              x-show="suggestedVersions.PATCH">
+                        <span class="badge badge-patch">PATCH</span>
+                        <span x-text="suggestedVersions.PATCH"></span>
+                      </button>
+                    </div>
+                  </template>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Description (optional)</label>
+              <textarea class="textarea" rows="4" x-model="commitForm.description"
+                        placeholder="Describe your changes in detail..."></textarea>
+            </div>
+
+            <div class="commit-preview">
+              <h4>Preview</h4>
+              <pre x-text="generateCommitMessage()"></pre>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button class="btn btn-secondary" @click="showCommitModal = false">Cancel</button>
+            <button class="btn btn-primary" @click="createCommit()" :disabled="!canCommit">
+              Commit
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Amend Modal -->
+      <div x-show="showAmendModal" class="modal" :class="{ active: showAmendModal }" x-cloak>
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3>Amend Last Commit</h3>
+            <button class="btn-icon" @click="showAmendModal = false">x</button>
+          </div>
+
+          <div class="modal-body">
+            <template x-if="lastCommit">
+              <div class="last-commit-info">
+                <h4>Last Commit</h4>
+                <div class="commit-details">
+                  <p><strong>Hash:</strong> <code x-text="lastCommit.hash"></code></p>
+                  <p><strong>Author:</strong> <span x-text="lastCommit.author"></span></p>
+                  <p><strong>Date:</strong> <span x-text="lastCommit.date"></span></p>
+                </div>
+              </div>
+            </template>
+
+            <div class="form-group">
+              <label>Commit Message</label>
+              <textarea class="textarea" rows="6" x-model="amendForm.message"
+                        placeholder="TYPE: Project Name - v1.0.0
+
+- Change 1
+- Change 2"></textarea>
+              <p class="text-sm text-muted">Keep the same version to amend the current release.</p>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button class="btn btn-secondary" @click="showAmendModal = false">Cancel</button>
+            <button class="btn btn-warning" @click="amendCommit()" :disabled="!amendForm.message">
+              Amend Commit
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Floating Action Buttons -->
+      <div class="fab-group">
+        <button class="fab fab-secondary" @click="openAmendModal()" title="Amend last commit">
+          <span>Amend</span>
+        </button>
+        <button class="fab" @click="openCommitModal()" title="Create new commit">
+          <span>+</span>
+        </button>
+      </div>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

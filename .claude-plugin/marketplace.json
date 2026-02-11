@@ -1,0 +1,24 @@
+{
+  "name": "claude-git",
+  "owner": {
+    "name": "Yanis",
+    "email": "yanis@example.com"
+  },
+  "metadata": {
+    "description": "Git automation and workflow tools for Claude Code with Versioned Release Convention",
+    "version": "0.5.0"
+  },
+  "plugins": [
+    {
+      "name": "git-master",
+      "source": "./plugins/git-master",
+      "description": "Advanced Git automation with Versioned Release Convention (RELEASE/UPDATE/PATCH), smart releases, amend workflow, and conflict resolution",
+      "version": "0.5.0",
+      "author": {
+        "name": "Yanis"
+      },
+      "keywords": ["git", "automation", "versioned-release", "semantic-versioning", "release", "merge-conflict", "web-interface", "mcp", "amend"],
+      "category": "version-control"
+    }
+  ]
+}
