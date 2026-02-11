@@ -18,12 +18,21 @@ function getServerDir() {
 }
 
 async function isServerRunning() {
-  try {
-    const response = await fetch(`http://localhost:${PORT}/api/config`);
-    return response.ok;
-  } catch {
-    return false;
+  // First check if PID file exists and process is running
+  if (fs.existsSync(PID_FILE)) {
+    try {
+      const pid = parseInt(fs.readFileSync(PID_FILE, 'utf-8'));
+      // Check if process is still running
+      process.kill(pid, 0); // 0 = signal check only, doesn't kill
+      fs.unlinkSync(PID_FILE);
+      return true;
+    } catch {
+      // Process not running, clean up stale PID file
+      fs.unlinkSync(PID_FILE);
+      return false;
+    }
   }
+  return false;
 }
 
 async function startServer() {
