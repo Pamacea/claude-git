@@ -1,6 +1,6 @@
 {
   "name": "git-flow-master-mcp",
-  "version": "1.0.1",
+  "version": "0.5.3",
   "description": "Git Flow Master - MCP Server for Claude Code integration",
   "type": "module",
   "main": "server.js",
