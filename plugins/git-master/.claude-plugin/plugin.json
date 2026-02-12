@@ -1,0 +1,68 @@
+{
+  "name": "git-flow-master",
+  "description": "Advanced Git automation with Versioned Release Convention (RELEASE/UPDATE/PATCH), smart releases, amend workflow, and conflict resolution",
+  "version": "0.5.0",
+  "author": {
+    "name": "Yanis"
+  },
+  "repository": "https://github.com/Pamacea/claude-git",
+  "license": "MIT",
+  "keywords": ["git", "automation", "versioned-release", "semantic-versioning", "release", "merge-conflict"],
+  "skills": "./skills/",
+  "commands": "./skills/",
+  "mcpServers": {
+    "git-flow-master": {
+      "command": "node",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/mcp-server.js"]
+    }
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/start-background.js start",
+            "timeout": 30
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "If this is a git commit command, verify the message follows Versioned Release Convention format: 'TYPE: Project Name - vVERSION' where TYPE is RELEASE, UPDATE, or PATCH. Warn if format is incorrect."
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ${CLAUDE_PLUGIN_ROOT}/hooks/post-git-operation.sh",
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/start-background.js stop",
+            "timeout": 15
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,204 @@
+{
+  "$schema": "./schema.json",
+  "commit": {
+    "convention": "versioned-release",
+    "types": {
+      "RELEASE": {
+        "description": "Major release - Breaking changes, new major version",
+        "emoji": "🚀",
+        "semverBump": "MAJOR",
+        "format": "RELEASE: {project} - v{version}"
+      },
+      "UPDATE": {
+        "description": "Minor update - New features, enhancements",
+        "emoji": "✨",
+        "semverBump": "MINOR",
+        "format": "UPDATE: {project} - v{version}"
+      },
+      "PATCH": {
+        "description": "Patch - Bug fixes, small improvements",
+        "emoji": "🔧",
+        "semverBump": "PATCH",
+        "format": "PATCH: {project} - v{version}"
+      }
+    },
+    "rules": {
+      "subjectMinLength": 10,
+      "subjectMaxLength": 100,
+      "bodyLineLength": 100,
+      "requireVersion": true,
+      "requireProjectName": true,
+      "versionPattern": "v\\d+\\.\\d+\\.\\d+",
+      "projectNameMaxLength": 50
+    },
+    "amend": {
+      "enabled": true,
+      "maxAmends": 10,
+      "requireSameDay": true,
+      "autoIncrementPatch": false,
+      "keepVersion": true,
+      "allowedForTypes": ["PATCH", "UPDATE"]
+    }
+  },
+  "release": {
+    "bumpMajor": ["RELEASE"],
+    "bumpMinor": ["UPDATE"],
+    "bumpPatch": ["PATCH"],
+    "changelogFile": "CHANGELOG.md",
+    "versionFiles": [
+      "package.json",
+      "package-lock.json",
+      "Cargo.toml",
+      "pyproject.toml",
+      "composer.json"
+    ],
+    "tagNameFormat": "v{version}",
+    "tagMessageFormat": "Release {version}",
+    "createGitHubRelease": true,
+    "autoDetectProjectName": true,
+    "gitHubReleaseTemplate": "## What's Changed\n\n{changelog}\n\n**Full Changelog**: https://github.com/{owner}/{repo}/compare/{previousVersion}...{version}"
+  },
+  "branch": {
+    "naming": {
+      "feature": "feature/{name}",
+      "fix": "fix/{name}",
+      "hotfix": "hotfix/{name}",
+      "release": "release/{version}",
+      "docs": "docs/{name}",
+      "refactor": "refactor/{name}"
+    },
+    "mainBranch": "main",
+    "developBranch": "develop",
+    "releaseBranchPrefix": "release/",
+    "requireCleanWorkingDir": true,
+    "requireUpToDate": true
+  },
+  "pr": {
+    "baseBranch": "main",
+    "template": ".github/PULL_REQUEST_TEMPLATE.md",
+    "labels": {
+      "RELEASE": "major",
+      "UPDATE": "enhancement",
+      "PATCH": "bug"
+    },
+    "autoAssign": [],
+    "requireReview": true,
+    "requireTests": true,
+    "requireDocs": false,
+    "mergeMethod": "squash",
+    "deleteAfterMerge": true
+  },
+  "hooks": {
+    "preCommit": {
+      "enabled": true,
+      "lint": true,
+      "typecheck": true,
+      "test": false,
+      "secretScan": true,
+      "fileSizeLimit": 1048576,
+      "blockedFilePatterns": [
+        "*.env",
+        "*.pem",
+        "*.key",
+        "secrets/*",
+        ".env.*"
+      ]
+    },
+    "commitMsg": {
+      "enabled": true,
+      "validate": true,
+      "enforceVersionedFormat": true,
+      "requireVersion": true,
+      "requireProjectName": true,
+      "allowAmend": true
+    },
+    "prePush": {
+      "enabled": true,
+      "runTests": false,
+      "checkBranch": true,
+      "blockedBranches": ["main", "develop", "master"]
+    },
+    "postRelease": {
+      "enabled": true,
+      "updateChangelog": true,
+      "createGitHubRelease": true,
+      "notify": true
+    }
+  },
+  "conflict": {
+    "strategies": {
+      "package.json": "union-merge",
+      "package-lock.json": "favor-incoming",
+      "yarn.lock": "favor-incoming",
+      "pnpm-lock.yaml": "favor-incoming",
+      "Cargo.lock": "favor-incoming",
+      "*.md": "union-merge",
+      "*.txt": "union-merge",
+      "*.json": "interactive",
+      "*.yaml": "interactive",
+      "*.yml": "interactive",
+      "*.ts": "interactive",
+      "*.tsx": "interactive",
+      "*.js": "interactive",
+      "*.jsx": "interactive",
+      "*.py": "interactive",
+      "*.rs": "interactive",
+      "*.go": "interactive"
+    },
+    "alwaysManual": [
+      "**/migrations/**",
+      "**/secrets/**",
+      "**/.env*",
+      "**/*.key",
+      "**/*.pem",
+      "**/schema.sql"
+    ],
+    "autoMergePatterns": [
+      "README.md",
+      "CHANGELOG.md",
+      "package*.json",
+      "*.lock"
+    ]
+  },
+  "integration": {
+    "gitAliases": {
+      "sc": "smart-commit",
+      "release": "auto-release",
+      "amend": "amend-commit",
+      "pr": "create-pr"
+    },
+    "vsCode": {
+      "enabled": true,
+      "keybindings": [
+        {
+          "key": "ctrl+alt+c",
+          "command": "git-flow-master.smartCommit"
+        },
+        {
+          "key": "ctrl+alt+r",
+          "command": "git-flow-master.autoRelease"
+        },
+        {
+          "key": "ctrl+alt+a",
+          "command": "git-flow-master.amendCommit"
+        }
+      ]
+    }
+  },
+  "notifications": {
+    "slack": {
+      "enabled": false,
+      "webhook": "",
+      "channel": "#releases",
+      "username": "Git Bot",
+      "iconEmoji": ":rocket:"
+    },
+    "discord": {
+      "enabled": false,
+      "webhook": ""
+    },
+    "desktop": {
+      "enabled": true
+    }
+  }
+}

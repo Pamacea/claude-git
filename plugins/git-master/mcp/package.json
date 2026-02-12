@@ -1,0 +1,22 @@
+{
+  "name": "git-flow-master-mcp",
+  "version": "0.5.3",
+  "description": "Git Flow Master - MCP Server for Claude Code integration",
+  "type": "module",
+  "main": "server.js",
+  "bin": {
+    "git-flow-mcp": "./server.js"
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "author": "Yanis",
+  "license": "MIT",
+  "keywords": ["mcp", "git", "conventional-commits", "claude", "claude-code"]
+}
