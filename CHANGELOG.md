@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.6.1] - 2026-02-16
+
+### Fixed
+
+#### MCP Server
+- Fixed: MCP server path in plugin.json now points to correct ES module implementation
+- Fixed: Changed from `mcp-server.js` (CommonJS) to `mcp/server.js` (ES modules with MCP SDK)
+- Fixed: MCP server connection now establishes successfully
+
+---
+
 ## [0.5.6] - 2026-02-16
 
 ### Fixed

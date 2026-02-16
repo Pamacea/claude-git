@@ -1,6 +1,6 @@
 # Claude Git - Git Flow Master Plugin
 
-> **Version:** 0.6.0
+> **Version:** 0.6.1
 > **Author:** Yanis
 > **Category:** Version Control
 

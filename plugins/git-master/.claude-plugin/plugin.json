@@ -1,7 +1,7 @@
 {
   "name": "git-flow-master",
   "description": "Advanced Git automation with Versioned Release Convention (RELEASE/UPDATE/PATCH), smart releases, amend workflow, and conflict resolution",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "author": {
     "name": "Yanis"
   },
@@ -13,7 +13,7 @@
   "mcpServers": {
     "git-flow-master": {
       "command": "node",
-      "args": ["${CLAUDE_PLUGIN_ROOT}/mcp-server.js"]
+      "args": ["${CLAUDE_PLUGIN_ROOT}/mcp/server.js"]
     }
   },
   "hooks": {
