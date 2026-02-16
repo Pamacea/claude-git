@@ -7,7 +7,8 @@
     "start": "node server.js",
     "dev": "node --watch server.js",
     "install-hooks": "node scripts/install-hooks.js",
-    "uninstall-hooks": "node scripts/uninstall-hooks.js"
+    "uninstall-hooks": "node scripts/uninstall-hooks.js",
+    "postinstall": "echo \"✓ Git Flow Master Web dependencies ready\""
   },
   "dependencies": {
     "express": "^4.18.2",

@@ -5,7 +5,7 @@
  * Starts the web server in the background (for Claude Code integration)
  */
 
-const { spawn, exec } = require('child_process');
+const { spawn, exec, execSync } = require('child_process');
 const path = require('path');
 const fs = require('fs');
 const os = require('os');
@@ -16,6 +16,43 @@ const LOG_FILE = path.join(require('os').homedir(), '.git-flow-master', 'server.
 
 function getServerDir() {
   return path.join(__dirname, '..', 'web');
+}
+
+/**
+ * Check if npm dependencies are installed
+ */
+function areDependenciesInstalled() {
+  const webDir = getServerDir();
+  const nodeModulesPath = path.join(webDir, 'node_modules');
+  const expressPath = path.join(nodeModulesPath, 'express');
+
+  try {
+    return fs.existsSync(expressPath);
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Install npm dependencies
+ */
+function installDependencies() {
+  const webDir = getServerDir();
+
+  console.log('📦 Installing Git Flow Master dependencies...');
+
+  try {
+    execSync('npm install', {
+      cwd: webDir,
+      stdio: 'inherit',
+      windowsHide: true
+    });
+    console.log('✓ Dependencies installed');
+    return true;
+  } catch (error) {
+    console.error('✗ Failed to install dependencies:', error.message);
+    return false;
+  }
 }
 
 async function isServerRunning() {
@@ -54,6 +91,15 @@ async function startServer() {
   if (await isServerRunning()) {
     console.log('✓ Git Flow Master server already running at http://localhost:3747');
     return;
+  }
+
+  // Check if dependencies are installed, install if needed
+  if (!areDependenciesInstalled()) {
+    const installed = installDependencies();
+    if (!installed) {
+      console.log('✗ Failed to install dependencies. Server not started.');
+      return;
+    }
   }
 
   const serverDir = getServerDir();
