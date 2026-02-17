@@ -10,12 +10,6 @@
   "keywords": ["git", "automation", "versioned-release", "semantic-versioning", "release", "merge-conflict"],
   "skills": "./skills/",
   "commands": "./skills/",
-  "mcpServers": {
-    "git-flow-master": {
-      "command": "node",
-      "args": ["${CLAUDE_PLUGIN_ROOT}/mcp/server.js"]
-    }
-  },
   "hooks": {
     "SessionStart": [
       {

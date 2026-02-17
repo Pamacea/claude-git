@@ -90,17 +90,24 @@ Claude: [Uses git_analyze_commits tool]
 
 ## Configuration
 
-Add to your Claude Code MCP settings:
+The MCP server is configured via `.claude-plugin/.mcp.json`:
 
 ```json
 {
   "mcpServers": {
     "git-flow-master": {
-      "command": "node",
-      "args": ["/path/to/git-flow-master/mcp/server.js"]
+      "type": "stdio",
+      "command": "${CLAUDE_PLUGIN_ROOT}/mcp/server.js"
     }
   }
 }
+```
+
+**Important:** After installing the plugin, run `npm install` in the `mcp/` directory to install the MCP SDK dependencies:
+
+```bash
+cd plugins/git-master/mcp
+npm install
 ```
 
 ## Tool Examples

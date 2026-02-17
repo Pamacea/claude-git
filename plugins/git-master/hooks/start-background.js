@@ -6,7 +6,7 @@
  * Performance: 80% faster startup with async/await
  */
 
-const { spawn, exec } = require('child_process');
+const { spawn, execSync } = require('child_process');
 const { promisify } = require('util');
 const fs = require('fs').promises;
 const path = require('path');
