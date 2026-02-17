@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.6.3] - 2026-02-17
+
+### Fixed
+
+#### Critical Hooks Bug
+- Fixed: Missing `exec` import in `start-background.js` causing SessionStart/Stop hook errors
+- Fixed: `fs.open()` Promise issue - changed to `fsSync.openSync()` for spawn stdio handles
+- Fixed: `.mcp.json` missing `node` command - MCP server now starts correctly on all platforms
+
+#### MCP Configuration
+- Added: `mcp.json` at root with `${CLAUDE_PLUGIN_ROOT}` for universal path resolution
+- Fixed: MCP server now properly detected in `/mcp` command output
+
+---
+
+## [0.6.2] - 2026-02-16
+
+### Changed
+
+#### Performance
+- Re-enabled SessionStart hook for web server auto-start (optimized)
+- Improved startup time with async dependency checking
+
+---
+
 ## [0.6.1] - 2026-02-16
 
 ### Fixed
