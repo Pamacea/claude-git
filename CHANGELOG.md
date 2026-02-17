@@ -7,6 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.6.5] - 2026-02-17
+
+### Fixed
+
+#### MCP Dependencies Installation
+- Fixed: MCP server dependencies not installed during SessionStart hook
+- Fixed: `start-background.js` now installs both web and MCP dependencies
+- Added: `getMcpDir()` function to handle MCP directory path
+- Updated: `areDependenciesInstalled()` to check `@modelcontextprotocol/sdk`
+- Updated: `installDependencies()` to run `npm install` in both `web/` and `mcp/` directories
+
+#### Impact
+- MCP server now starts correctly on first plugin load
+- No more "Cannot find package '@modelcontextprotocol/sdk'" errors
+- Automatic dependency installation for all components
+
+---
+
+## [0.6.4] - 2026-02-17
+
+### Fixed
+
+#### Hooks Configuration
+- Fixed: Removed deprecated `execSync` from Stop hook in plugin.json
+- Updated: All hooks now use Node.js scripts instead of shell commands
+- Improved: Cross-platform compatibility for all hooks
+
+---
+
 ## [0.6.3] - 2026-02-17
 
 ### Fixed

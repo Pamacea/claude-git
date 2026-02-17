@@ -28,6 +28,10 @@ function getServerDir() {
   return path.join(__dirname, '..', 'web');
 }
 
+function getMcpDir() {
+  return path.join(__dirname, '..', 'mcp');
+}
+
 /**
  * ASYNC: Check if npm dependencies are installed (cached)
  */
@@ -35,11 +39,15 @@ async function areDependenciesInstalled() {
   if (depsChecked) return depsInstalled;
 
   const webDir = getServerDir();
-  const nodeModulesPath = path.join(webDir, 'node_modules');
-  const expressPath = path.join(nodeModulesPath, 'express');
+  const mcpDir = getMcpDir();
+  const webNodeModulesPath = path.join(webDir, 'node_modules');
+  const mcpNodeModulesPath = path.join(mcpDir, 'node_modules');
+  const expressPath = path.join(webNodeModulesPath, 'express');
+  const mcpSdkPath = path.join(mcpNodeModulesPath, '@modelcontextprotocol');
 
   try {
     await fs.access(expressPath);
+    await fs.access(mcpSdkPath);
     depsInstalled = true;
   } catch {
     depsInstalled = false;
@@ -54,11 +62,12 @@ async function areDependenciesInstalled() {
  */
 async function installDependencies() {
   const webDir = getServerDir();
+  const mcpDir = getMcpDir();
 
   console.log('📦 Installing Git Flow Master dependencies...');
 
   try {
-    // Use spawn instead of execSync for non-blocking installation
+    // Install web dependencies
     await new Promise((resolve, reject) => {
       const proc = spawn('npm', ['install'], {
         cwd: webDir,
@@ -70,7 +79,27 @@ async function installDependencies() {
       proc.on('error', reject);
       proc.on('close', (code) => {
         if (code === 0) {
-          console.log('✓ Dependencies installed');
+          console.log('✓ Web dependencies installed');
+          resolve();
+        } else {
+          reject(new Error(`npm install failed with code ${code}`));
+        }
+      });
+    });
+
+    // Install MCP dependencies
+    await new Promise((resolve, reject) => {
+      const proc = spawn('npm', ['install'], {
+        cwd: mcpDir,
+        stdio: 'inherit',
+        windowsHide: true,
+        detached: false
+      });
+
+      proc.on('error', reject);
+      proc.on('close', (code) => {
+        if (code === 0) {
+          console.log('✓ MCP dependencies installed');
           resolve();
         } else {
           reject(new Error(`npm install failed with code ${code}`));
