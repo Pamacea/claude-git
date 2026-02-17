@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.6.6] - 2026-02-17
+
+### Fixed
+
+#### Automatic Dependency Installation
+- Added: `postinstall` script in plugin.json for automatic dependency installation
+- Fixed: `install-dependencies.js` now installs both web AND MCP dependencies
+- Improved: `start-background.js` uses shared install script for consistency
+- Fixed: Windows process checking now uses `tasklist` instead of deprecated `wmic`
+
+#### Impact
+- Dependencies are now installed automatically when the plugin is loaded/updated
+- MCP server starts correctly without manual `npm install`
+- SessionStart hook no longer fails with dependency errors
+
+---
+
 ## [0.6.5] - 2026-02-17
 
 ### Fixed

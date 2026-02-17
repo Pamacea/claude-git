@@ -1,7 +1,7 @@
 {
   "name": "git-flow-master",
   "description": "Advanced Git automation with Versioned Release Convention (RELEASE/UPDATE/PATCH), smart releases, amend workflow, and conflict resolution",
-  "version": "0.6.5",
+  "version": "0.6.6",
   "author": {
     "name": "Yanis"
   },
@@ -10,6 +10,7 @@
   "keywords": ["git", "automation", "versioned-release", "semantic-versioning", "release", "merge-conflict"],
   "skills": "./skills/",
   "commands": "./skills/",
+  "postinstall": "node ${CLAUDE_PLUGIN_ROOT}/hooks/install-dependencies.js",
   "hooks": {
     "SessionStart": [
       {

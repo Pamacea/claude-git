@@ -2,86 +2,123 @@
 
 /**
  * Git Flow Master - Install Dependencies
- * Ensures npm dependencies are installed for the web server
+ * Ensures npm dependencies are installed for both web server and MCP server
  */
 
 const { spawn, execSync } = require('child_process');
 const path = require('path');
 const fs = require('fs');
 
-const WEB_DIR = path.join(__dirname, '..', 'web');
-const NODE_MODULES_CHECK = path.join(WEB_DIR, 'node_modules');
-const PACKAGE_JSON = path.join(WEB_DIR, 'package.json');
+const PLUGIN_ROOT = path.join(__dirname, '..');
+const WEB_DIR = path.join(PLUGIN_ROOT, 'web');
+const MCP_DIR = path.join(PLUGIN_ROOT, 'mcp');
+
+const WEB_NODE_MODULES = path.join(WEB_DIR, 'node_modules');
+const MCP_NODE_MODULES = path.join(MCP_DIR, 'node_modules');
+
+const WEB_PACKAGE_JSON = path.join(WEB_DIR, 'package.json');
+const MCP_PACKAGE_JSON = path.join(MCP_DIR, 'package.json');
 
 /**
  * Check if node_modules exists and has dependencies
  */
-function isNodeModulesInstalled() {
+function isNodeModulesInstalled(dir, mainDependency) {
   try {
-    // Check if node_modules directory exists
-    if (!fs.existsSync(NODE_MODULES_CHECK)) {
+    const nodeModulesPath = path.join(dir, 'node_modules');
+    if (!fs.existsSync(nodeModulesPath)) {
       return false;
     }
 
-    // Check if express is installed (main dependency)
-    const expressPath = path.join(NODE_MODULES_CHECK, 'express');
-    return fs.existsSync(expressPath);
+    const depPath = path.join(nodeModulesPath, mainDependency);
+    return fs.existsSync(depPath);
   } catch {
     return false;
   }
 }
 
 /**
- * Install npm dependencies
+ * Install npm dependencies using spawn for better cross-platform support
  */
-function installDependencies() {
-  console.log('📦 Installing Git Flow Master web dependencies...');
+function installDependencies(dir, name) {
+  console.log(`📦 Installing ${name} dependencies...`);
 
-  try {
-    // Run npm install in web directory
-    const result = execSync('npm install', {
-      cwd: WEB_DIR,
+  return new Promise((resolve, reject) => {
+    const proc = spawn('npm', ['install'], {
+      cwd: dir,
       stdio: 'inherit',
+      shell: true,
       windowsHide: true
     });
 
-    console.log('✓ Dependencies installed successfully');
-    return true;
-  } catch (error) {
-    console.error('✗ Failed to install dependencies:', error.message);
-    return false;
-  }
+    proc.on('error', (err) => {
+      console.error(`✗ Failed to install ${name}:`, err.message);
+      reject(err);
+    });
+
+    proc.on('close', (code) => {
+      if (code === 0) {
+        console.log(`✓ ${name} dependencies installed`);
+        resolve(true);
+      } else {
+        reject(new Error(`npm install failed with code ${code}`));
+      }
+    });
+  });
 }
 
 /**
  * Main execution
  */
-function main() {
-  // Check if package.json exists
-  if (!fs.existsSync(PACKAGE_JSON)) {
-    console.error('✗ package.json not found in', WEB_DIR);
-    process.exit(1);
+async function main() {
+  let allInstalled = true;
+
+  // Install web dependencies
+  if (fs.existsSync(WEB_PACKAGE_JSON)) {
+    if (!isNodeModulesInstalled(WEB_DIR, 'express')) {
+      try {
+        await installDependencies(WEB_DIR, 'Web Interface');
+      } catch (error) {
+        console.error(`✗ Failed to install web dependencies:`, error.message);
+        allInstalled = false;
+      }
+    } else {
+      console.log('✓ Web dependencies already installed');
+    }
+  } else {
+    console.log('⚠ No web package.json found, skipping web dependencies');
   }
 
-  // Check if dependencies are already installed
-  if (isNodeModulesInstalled()) {
-    console.log('✓ Dependencies already installed');
+  // Install MCP dependencies
+  if (fs.existsSync(MCP_PACKAGE_JSON)) {
+    if (!isNodeModulesInstalled(MCP_DIR, '@modelcontextprotocol')) {
+      try {
+        await installDependencies(MCP_DIR, 'MCP Server');
+      } catch (error) {
+        console.error(`✗ Failed to install MCP dependencies:`, error.message);
+        allInstalled = false;
+      }
+    } else {
+      console.log('✓ MCP dependencies already installed');
+    }
+  } else {
+    console.log('⚠ No MCP package.json found, skipping MCP dependencies');
+  }
+
+  if (allInstalled) {
+    console.log('✓ All dependencies installed successfully');
     process.exit(0);
-  }
-
-  // Install dependencies
-  const success = installDependencies();
-
-  if (!success) {
+  } else {
+    console.error('✗ Some dependencies failed to install');
     process.exit(1);
   }
-
-  process.exit(0);
 }
 
 // Run if called directly
 if (require.main === module) {
-  main();
+  main().catch((error) => {
+    console.error('✗ Installation failed:', error.message);
+    process.exit(1);
+  });
 }
 
 module.exports = { isNodeModulesInstalled, installDependencies };

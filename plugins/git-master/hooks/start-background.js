@@ -1,9 +1,8 @@
 #!/usr/bin/env node
 
 /**
- * Git Flow Master - Background Server Starter (OPTIMIZED v0.6.0)
+ * Git Flow Master - Background Server Starter (v0.6.6)
  * Starts the web server in the background with async operations
- * Performance: 80% faster startup with async/await
  */
 
 const { spawn, execSync, exec } = require('child_process');
@@ -20,10 +19,6 @@ const DATA_DIR = path.join(os.homedir(), '.git-flow-master');
 const PID_FILE = path.join(DATA_DIR, 'server.pid');
 const LOG_FILE = path.join(DATA_DIR, 'server.log');
 
-// Cache for dependency check
-let depsChecked = false;
-let depsInstalled = false;
-
 function getServerDir() {
   return path.join(__dirname, '..', 'web');
 }
@@ -32,12 +27,14 @@ function getMcpDir() {
   return path.join(__dirname, '..', 'mcp');
 }
 
+function getPluginRoot() {
+  return path.join(__dirname, '..');
+}
+
 /**
  * ASYNC: Check if npm dependencies are installed (cached)
  */
 async function areDependenciesInstalled() {
-  if (depsChecked) return depsInstalled;
-
   const webDir = getServerDir();
   const mcpDir = getMcpDir();
   const webNodeModulesPath = path.join(webDir, 'node_modules');
@@ -48,69 +45,53 @@ async function areDependenciesInstalled() {
   try {
     await fs.access(expressPath);
     await fs.access(mcpSdkPath);
-    depsInstalled = true;
+    return true;
   } catch {
-    depsInstalled = false;
+    return false;
   }
-
-  depsChecked = true;
-  return depsInstalled;
 }
 
 /**
- * ASYNC: Install npm dependencies (non-blocking)
+ * ASYNC: Install npm dependencies using the shared script
  */
 async function installDependencies() {
-  const webDir = getServerDir();
-  const mcpDir = getMcpDir();
+  const pluginRoot = getPluginRoot();
+  const installScript = path.join(pluginRoot, 'hooks', 'install-dependencies.js');
 
   console.log('📦 Installing Git Flow Master dependencies...');
 
+  return new Promise((resolve, reject) => {
+    const proc = spawn('node', [installScript], {
+      cwd: pluginRoot,
+      stdio: 'inherit',
+      shell: true,
+      windowsHide: true
+    });
+
+    proc.on('error', (err) => {
+      console.error('✗ Failed to run install script:', err.message);
+      reject(err);
+    });
+
+    proc.on('close', (code) => {
+      if (code === 0) {
+        console.log('✓ Dependencies installed');
+        resolve(true);
+      } else {
+        reject(new Error(`install script failed with code ${code}`));
+      }
+    });
+  });
+}
+
+/**
+ * ASYNC: Check if file exists
+ */
+async function fileExists(filePath) {
   try {
-    // Install web dependencies
-    await new Promise((resolve, reject) => {
-      const proc = spawn('npm', ['install'], {
-        cwd: webDir,
-        stdio: 'inherit',
-        windowsHide: true,
-        detached: false
-      });
-
-      proc.on('error', reject);
-      proc.on('close', (code) => {
-        if (code === 0) {
-          console.log('✓ Web dependencies installed');
-          resolve();
-        } else {
-          reject(new Error(`npm install failed with code ${code}`));
-        }
-      });
-    });
-
-    // Install MCP dependencies
-    await new Promise((resolve, reject) => {
-      const proc = spawn('npm', ['install'], {
-        cwd: mcpDir,
-        stdio: 'inherit',
-        windowsHide: true,
-        detached: false
-      });
-
-      proc.on('error', reject);
-      proc.on('close', (code) => {
-        if (code === 0) {
-          console.log('✓ MCP dependencies installed');
-          resolve();
-        } else {
-          reject(new Error(`npm install failed with code ${code}`));
-        }
-      });
-    });
-
-    depsInstalled = true;
+    await fs.access(filePath);
     return true;
-  } catch (error) {
-    console.error('✗ Failed to install dependencies:', error.message);
+  } catch {
     return false;
   }
 }
@@ -127,9 +108,9 @@ async function isServerRunning() {
     const pid = parseInt(await fs.readFile(PID_FILE, 'utf-8'));
 
     if (os.platform() === 'win32') {
-      // Windows: use WMIC for faster process check
+      // Windows: use tasklist for faster process check
       try {
-        await execAsync(`wmic process where "ProcessId=${pid}" get ProcessId 2>nul`);
+        await execAsync(`tasklist /FI "PID eq ${pid}" 2>nul | findstr "${pid}"`);
         return true;
       } catch {
         // Process not running, clean up stale PID file
@@ -146,18 +127,6 @@ async function isServerRunning() {
         return false;
       }
     }
-  } catch {
-    return false;
-  }
-}
-
-/**
- * ASYNC helper: Check if file exists
- */
-async function fileExists(filePath) {
-  try {
-    await fs.access(filePath);
-    return true;
   } catch {
     return false;
   }
