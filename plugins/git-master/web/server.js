@@ -245,6 +245,41 @@ function sanitizeCommitMessage(message) {
 // API ROUTES - STATUS
 // ============================================================================
 
+// Get server status and statistics
+app.get('/api/status', async (req, res) => {
+  try {
+    const state = await loadState();
+    const repoCount = (state.repositories || []).length;
+
+    let hooksCount = 0;
+    Object.values(state.activeHooks || {}).forEach(hooks => {
+      hooksCount += Object.keys(hooks).length;
+    });
+
+    res.json({
+      status: 'online',
+      version: require('../package.json').version || '0.7.0',
+      timestamp: new Date().toISOString(),
+      statistics: {
+        repositories: repoCount,
+        hooksInstalled: hooksCount,
+        uptime: Math.floor(process.uptime())
+      },
+      server: {
+        port: PORT,
+        nodeVersion: process.version,
+        platform: process.platform,
+        architecture: process.arch
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'error',
+      message: error.message
+    });
+  }
+});
+
 // Get CSRF token
 app.get('/api/csrf-token', async (req, res) => {
   const token = crypto.randomBytes(32).toString('hex');

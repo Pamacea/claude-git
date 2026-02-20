@@ -1,7 +1,7 @@
 {
   "name": "git-flow-master",
   "description": "Advanced Git automation with Versioned Release Convention (RELEASE/UPDATE/PATCH), smart releases, amend workflow, and conflict resolution",
-  "version": "0.6.7",
+  "version": "0.7.0",
   "author": {
     "name": "Yanis"
   },
@@ -19,6 +19,11 @@
             "type": "command",
             "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/start-background.js start",
             "timeout": 30
+          },
+          {
+            "type": "command",
+            "command": "node ${CLAUDE_PLUGIN_ROOT}/hooks/session-start-hook.js",
+            "timeout": 10
           }
         ]
       }

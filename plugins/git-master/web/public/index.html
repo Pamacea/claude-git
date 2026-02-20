@@ -3,1082 +3,170 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Git Flow Master</title>
-  <style>
-    :root {
-      --primary: #6366f1;
-      --primary-dark: #4f46e5;
-      --success: #10b981;
-      --warning: #f59e0b;
-      --danger: #ef4444;
-      --bg: #0f172a;
-      --bg-card: #1e293b;
-      --bg-card-hover: #334155;
-      --text: #f1f5f9;
-      --text-muted: #94a3b8;
-      --border: #334155;
-      --shadow: rgba(0, 0, 0, 0.3);
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      line-height: 1.6;
-    }
-
-    .container {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 20px;
-    }
-
-    /* Header */
-    .header {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 20px 24px;
-      margin-bottom: 24px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 4px 6px var(--shadow);
-    }
-
-    .header-left { display: flex; align-items: center; gap: 16px; }
-
-    .logo {
-      width: 48px;
-      height: 48px;
-      background: linear-gradient(135deg, var(--primary), #8b5cf6);
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-    }
-
-    .header h1 {
-      font-size: 24px;
-      font-weight: 700;
-      background: linear-gradient(135deg, var(--text), var(--primary));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .status-badge {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 16px;
-      border-radius: 20px;
-      font-size: 13px;
-      font-weight: 600;
-      transition: all 0.3s;
-    }
-
-    .status-badge.online {
-      background: rgba(16, 185, 129, 0.15);
-      color: var(--success);
-      border: 1px solid rgba(16, 185, 129, 0.3);
-    }
-
-    .status-badge.offline {
-      background: rgba(239, 68, 68, 0.15);
-      color: var(--danger);
-      border: 1px solid rgba(239, 68, 68, 0.3);
-    }
-
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      animation: pulse 2s infinite;
-    }
-
-    .status-badge.online .status-dot { background: var(--success); }
-    .status-badge.offline .status-dot { background: var(--danger); }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
-    }
-
-    /* Tabs */
-    .tabs {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 24px;
-      background: var(--bg-card);
-      padding: 8px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      width: fit-content;
-    }
-
-    .tab {
-      padding: 12px 24px;
-      border: none;
-      background: none;
-      color: var(--text-muted);
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
-      border-radius: 8px;
-      transition: all 0.2s;
-    }
-
-    .tab:hover { color: var(--text); }
-
-    .tab.active {
-      background: var(--primary);
-      color: white;
-    }
-
-    /* Cards */
-    .card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 24px;
-      margin-bottom: 20px;
-      box-shadow: 0 4px 6px var(--shadow);
-    }
-
-    .card h2 {
-      font-size: 18px;
-      font-weight: 600;
-      margin-bottom: 16px;
-      color: var(--text);
-    }
-
-    /* Stats Grid */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 16px;
-      margin-bottom: 24px;
-    }
-
-    .stat-card {
-      background: linear-gradient(135deg, var(--bg-card), var(--bg-card-hover));
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 20px;
-      text-align: center;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-
-    .stat-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 16px var(--shadow);
-    }
-
-    .stat-value {
-      font-size: 36px;
-      font-weight: 700;
-      background: linear-gradient(135deg, var(--primary), #8b5cf6);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .stat-label {
-      font-size: 13px;
-      color: var(--text-muted);
-      margin-top: 4px;
-    }
-
-    /* Buttons */
-    .btn {
-      padding: 12px 24px;
-      border: none;
-      border-radius: 8px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-    .btn:hover:not(:disabled) { transform: translateY(-1px); }
-
-    .btn-primary {
-      background: var(--primary);
-      color: white;
-    }
-
-    .btn-primary:hover:not(:disabled) { background: var(--primary-dark); }
-
-    .btn-success {
-      background: var(--success);
-      color: white;
-    }
-
-    .btn-warning {
-      background: var(--warning);
-      color: white;
-    }
-
-    .btn-secondary {
-      background: var(--bg-card-hover);
-      color: var(--text);
-      border: 1px solid var(--border);
-    }
-
-    .btn-secondary:hover:not(:disabled) { background: var(--border); }
-
-    .btn-sm {
-      padding: 8px 16px;
-      font-size: 13px;
-    }
-
-    .btn-xs {
-      padding: 6px 12px;
-      font-size: 12px;
-    }
-
-    /* Repository Grid */
-    .repo-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-      gap: 16px;
-    }
-
-    .repo-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 20px;
-      transition: all 0.2s;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .repo-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 3px;
-      background: linear-gradient(90deg, var(--primary), #8b5cf6);
-      opacity: 0;
-      transition: opacity 0.2s;
-    }
-
-    .repo-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 16px var(--shadow);
-      border-color: var(--primary);
-    }
-
-    .repo-card:hover::before { opacity: 1; }
-
-    .repo-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 12px;
-    }
-
-    .repo-name {
-      font-size: 16px;
-      font-weight: 600;
-      color: var(--text);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .repo-icon {
-      width: 32px;
-      height: 32px;
-      background: linear-gradient(135deg, var(--primary), #8b5cf6);
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-    }
-
-    .repo-path {
-      font-size: 12px;
-      color: var(--text-muted);
-      font-family: 'Consolas', 'Monaco', monospace;
-      padding: 8px 12px;
-      background: var(--bg);
-      border-radius: 6px;
-      margin-bottom: 12px;
-      word-break: break-all;
-    }
-
-    .repo-meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 12px;
-    }
-
-    .badge {
-      padding: 4px 10px;
-      border-radius: 6px;
-      font-size: 11px;
-      font-weight: 600;
-    }
-
-    .badge.branch {
-      background: rgba(99, 102, 241, 0.15);
-      color: var(--primary);
-    }
-
-    .badge.hooks-on {
-      background: rgba(16, 185, 129, 0.15);
-      color: var(--success);
-    }
-
-    .badge.hooks-off {
-      background: rgba(245, 158, 11, 0.15);
-      color: var(--warning);
-    }
-
-    .repo-actions {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    /* Forms */
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 16px;
-      align-items: end;
-    }
-
-    .form-group {
-      margin-bottom: 16px;
-    }
-
-    .form-label {
-      display: block;
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text-muted);
-      margin-bottom: 8px;
-    }
-
-    input, select, textarea {
-      width: 100%;
-      padding: 12px 16px;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      color: var(--text);
-      font-size: 14px;
-      transition: all 0.2s;
-    }
-
-    input:focus, select:focus, textarea:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-    }
-
-    textarea {
-      resize: vertical;
-      min-height: 80px;
-      font-family: 'Consolas', 'Monaco', monospace;
-    }
-
-    /* Output */
-    .output {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 16px;
-      font-family: 'Consolas', 'Monaco', monospace;
-      font-size: 13px;
-      max-height: 200px;
-      overflow-y: auto;
-    }
-
-    .output-line {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 4px;
-    }
-
-    .output-time {
-      color: var(--text-muted);
-      min-width: 80px;
-    }
-
-    .output-info { color: var(--text); }
-    .output-error { color: var(--danger); }
-
-    /* Loading */
-    .loading {
-      text-align: center;
-      padding: 40px;
-      color: var(--text-muted);
-    }
-
-    .spinner {
-      display: inline-block;
-      width: 40px;
-      height: 40px;
-      border: 3px solid var(--border);
-      border-top-color: var(--primary);
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    /* View toggling */
-    .view { display: none; }
-    .view.active { display: block; }
-
-    /* Commit preview */
-    .commit-preview {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 16px;
-      font-family: 'Consolas', 'Monaco', monospace;
-      font-size: 13px;
-      min-height: 60px;
-    }
-
-    /* Version suggestions */
-    .version-suggestions {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-top: 8px;
-    }
-
-    /* Utility */
-    .hidden { display: none !important; }
-    .flex { display: flex; }
-    .flex-wrap { flex-wrap: wrap; }
-    .gap-2 { gap: 8px; }
-    .gap-3 { gap: 12px; }
-    .items-center { align-items: center; }
-    .justify-between { justify-content: space-between; }
-    .text-muted { color: var(--text-muted); }
-    .text-sm { font-size: 13px; }
-
-    /* Scrollbar */
-    ::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
-    }
-
-    ::-webkit-scrollbar-track {
-      background: var(--bg);
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background: var(--border);
-      border-radius: 4px;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-      background: var(--text-muted);
-    }
-
-    @media (max-width: 768px) {
-      .form-row { grid-template-columns: 1fr; }
-      .repo-grid { grid-template-columns: 1fr; }
-      .header { flex-direction: column; gap: 16px; }
-    }
-  </style>
+  <title>Git Flow Master v0.7.0</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="container">
-    <!-- Header -->
-    <div class="header">
-      <div class="header-left">
-        <div class="logo">⚡</div>
-        <h1>Git Flow Master</h1>
-      </div>
-      <div id="status" class="status-badge offline">
-        <div class="status-dot"></div>
-        <span>Offline</span>
-      </div>
-    </div>
+  <div class="full-height-flex-layout">
+    <!-- Main Column -->
+    <div class="main-col">
+      <!-- Header -->
+      <div class="header">
+        <h1>
+          <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>" alt="Git Flow Master" class="logomark">
+          <span class="logo-text">Git Flow Master</span>
+          <div class="queue-bubble" id="queueBubble" style="display: none;">0</div>
+        </h1>
 
-    <!-- Tabs -->
-    <div class="tabs">
-      <button class="tab active" data-tab="dashboard" onclick="switchTab('dashboard')">📊 Dashboard</button>
-      <button class="tab" data-tab="repos" onclick="switchTab('repos')">📁 Repositories</button>
-      <button class="tab" data-tab="commit" onclick="switchTab('commit')">✨ New Commit</button>
-    </div>
-
-    <!-- Dashboard View -->
-    <div id="view-dashboard" class="view active">
-      <!-- Stats -->
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-value" id="repoCount">0</div>
-          <div class="stat-label">Repositories</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value" id="hooksCount">0</div>
-          <div class="stat-label">Hooks Installed</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value" id="commitsCount">0</div>
-          <div class="stat-label">Total Commits</div>
-        </div>
-      </div>
-
-      <!-- Quick Actions -->
-      <div class="card">
-        <h2>⚡ Quick Actions</h2>
-        <div class="flex gap-3 flex-wrap">
-          <button class="btn btn-primary" onclick="scanRepos()">
-            🔄 Scan All Repositories
-          </button>
-          <button class="btn btn-success" onclick="loadCurrentRepo()">
-            📂 Load Current Repo
-          </button>
-          <button class="btn btn-secondary" onclick="refreshState()">
-            🔃 Refresh State
-          </button>
-        </div>
-      </div>
-
-      <!-- Current Repo -->
-      <div id="currentRepoCard" class="card hidden">
-        <h2>📌 Current Repository</h2>
-        <p><strong>Name:</strong> <span id="repoName">-</span></p>
-        <p><strong>Path:</strong> <span id="repoPath">-</span></p>
-        <p><strong>Branch:</strong> <span id="repoBranch">-</span></p>
-        <p><strong>Hooks:</strong> <span id="repoHooks" class="badge hooks-off">Not Installed</span></p>
-        <div class="flex gap-3" style="margin-top: 16px;">
-          <button class="btn btn-success" onclick="installHooks()">Install Hooks</button>
-          <button class="btn btn-warning" onclick="uninstallHooks()">Uninstall Hooks</button>
-        </div>
-      </div>
-
-      <!-- Output -->
-      <div class="card">
-        <h2>📋 Output</h2>
-        <div id="output" class="output">Initializing...</div>
-      </div>
-    </div>
-
-    <!-- Repositories View -->
-    <div id="view-repos" class="view">
-      <div class="card">
-        <h2>🔍 Scan Directory</h2>
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">Directory Path (optional)</label>
-            <input type="text" id="scanDir" placeholder="Leave empty to auto-discover all repositories">
-          </div>
-          <button class="btn btn-primary" onclick="scanRepos()">Scan</button>
-        </div>
-      </div>
-
-      <div class="card">
-        <h2>📁 Repositories</h2>
-        <div id="repoList" class="repo-grid">
-          <div class="loading">
-            <div class="spinner"></div>
-            <p style="margin-top: 16px;">Loading repositories...</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Commit View -->
-    <div id="view-commit" class="view">
-      <div class="card">
-        <h2>✨ Create Versioned Commit</h2>
-
-        <div class="form-group">
-          <label class="form-label">Repository</label>
-          <select id="commitRepo" onchange="onCommitRepoChange()">
-            <option value="">Select repository...</option>
-          </select>
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label">Commit Type</label>
-            <select id="commitType" onchange="updateCommitPreview()">
-              <option value="PATCH">🔧 PATCH - Bug fixes (vX.Y.Z+1)</option>
-              <option value="UPDATE">✨ UPDATE - New features (vX.Y+1.0)</option>
-              <option value="RELEASE">🚀 RELEASE - Breaking changes (vX+1.0.0)</option>
+        <div class="header-controls">
+          <!-- Status -->
+          <div class="status">
+            <div class="status-dot" id="statusDot"></div>
+            <select id="projectSelect" aria-label="Select project">
+              <option value="all">All Repositories</option>
             </select>
           </div>
 
+          <!-- Settings Button -->
+          <button class="settings-btn" id="settingsBtn" aria-label="Settings">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M12 1v6m0 6v6m9-9h-6m-6 0H3m15.364 6.364l-4.243 4.243M9.879 9.879L5.636 5.636m12.728 0l-4.243 4.243M9.879 14.121l-4.243 4.243"></path>
+            </svg>
+          </button>
+
+          <!-- Theme Toggle -->
+          <button class="theme-toggle-btn" id="themeToggle" aria-label="Toggle theme">
+            <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: block;">
+              <circle cx="12" cy="12" r="4"></circle>
+              <path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+            </svg>
+            <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Feed -->
+      <div class="feed">
+        <div class="feed-content">
+
+          <!-- Quick Stats -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-value" id="repoCount">0</div>
+              <div class="stat-label">Repositories</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="hooksCount">0</div>
+              <div class="stat-label">Hooks Installed</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="commitsCount">0</div>
+              <div class="stat-label">Recent Commits</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="uptimeValue">0m</div>
+              <div class="stat-label">Server Uptime</div>
+            </div>
+          </div>
+
+          <!-- Quick Actions -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-header-left">
+                <span class="card-type">ACTIONS</span>
+              </div>
+            </div>
+            <div class="card-content">
+              <div class="action-buttons">
+                <button class="btn btn-primary" onclick="scanAllRepos()">
+                  🔄 Scan All Repositories
+                </button>
+                <button class="btn btn-success" onclick="loadCurrentRepo()">
+                  📂 Load Current Repo
+                </button>
+                <button class="btn btn-secondary" onclick="refreshState()">
+                  🔃 Refresh State
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Repositories List -->
+          <div id="reposContainer">
+            <!-- Repo cards will be injected here -->
+            <div class="card">
+              <div class="card-content">
+                <div class="loading-state">
+                  <div class="spinner"></div>
+                  <p style="margin-top: 16px;">Loading repositories...</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <h1>Settings</h1>
+        <button class="modal-close-btn" id="closeSidebar" aria-label="Close sidebar">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="sidebar-content">
+        <!-- Convention Editor -->
+        <div class="settings-section">
+          <h3>Convention Configuration</h3>
           <div class="form-group">
             <label class="form-label">Project Name</label>
-            <input type="text" id="commitProject" placeholder="My Project" oninput="updateCommitPreview()">
+            <input type="text" id="configProjectName" placeholder="My Project" />
           </div>
+          <div class="form-group">
+            <label class="form-label">Default Commit Type</label>
+            <select id="configCommitType">
+              <option value="PATCH">PATCH - Bug fixes</option>
+              <option value="UPDATE">UPDATE - New features</option>
+              <option value="RELEASE">RELEASE - Breaking changes</option>
+            </select>
+          </div>
+          <button class="btn btn-primary" onclick="saveConfig()" style="width: 100%;">
+            Save Configuration
+          </button>
         </div>
 
-        <div class="form-group">
-          <label class="form-label">Version</label>
-          <input type="text" id="commitVersion" placeholder="v1.0.0" pattern="v\d+\.\d+\.\d+" oninput="updateCommitPreview()">
-          <div class="version-suggestions" id="versionSuggestions"></div>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Description (optional)</label>
-          <textarea id="commitDescription" rows="4" placeholder="- Fixed bug in authentication&#10;- Added new feature" oninput="updateCommitPreview()"></textarea>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Commit Preview</label>
-          <div id="commitPreview" class="commit-preview">TYPE: Project Name - vX.Y.Z</div>
-        </div>
-
-        <div class="flex gap-3" style="margin-top: 20px;">
-          <button class="btn btn-secondary" onclick="clearCommitForm()">Clear</button>
-          <button class="btn btn-primary" onclick="createCommit()">Create Commit</button>
+        <!-- Statistics -->
+        <div class="settings-section">
+          <h3>Statistics</h3>
+          <div class="stats-scroll">
+            <div class="stat-row">
+              <span class="stat-label">Total Repositories</span>
+              <span class="stat-value-small" id="statTotalRepos">0</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Hooks Installed</span>
+              <span class="stat-value-small" id="statTotalHooks">0</span>
+            </div>
+            <div class="stat-row">
+              <span class="stat-label">Convention Compliance</span>
+              <span class="stat-value-small" id="statCompliance">0%</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <script>
-    (function() {
-      'use strict';
-
-      const API_BASE = 'http://localhost:3747/api';
-      let currentState = { repositories: [], config: {} };
-      let isLoading = false;
-
-      // Tab switching
-      window.switchTab = function(tabName) {
-        document.querySelectorAll('.tab').forEach(function(t) {
-          t.classList.remove('active');
-        });
-        document.querySelectorAll('.view').forEach(function(v) {
-          v.classList.remove('active');
-        });
-        var activeTab = document.querySelector('.tab[data-tab="' + tabName + '"]');
-        if (activeTab) activeTab.classList.add('active');
-        var activeView = document.getElementById('view-' + tabName);
-        if (activeView) activeView.classList.add('active');
-      };
-
-      // API Helper with loading state
-      async function api(endpoint, options) {
-        options = options || {};
-        try {
-          var url = API_BASE + endpoint;
-          var params = [];
-          if (options.query) {
-            for (var key in options.query) {
-              params.push(encodeURIComponent(key) + '=' + encodeURIComponent(options.query[key]));
-            }
-            if (params.length > 0) url += '?' + params.join('&');
-          }
-          var response = await fetch(url, {
-            method: options.method || 'GET',
-            headers: { 'Content-Type': 'application/json' },
-            body: options.body ? JSON.stringify(options.body) : undefined,
-            credentials: 'same-origin'
-          });
-          if (!response.ok) {
-            var text = await response.text();
-            throw new Error('HTTP ' + response.status + ': ' + text);
-          }
-          return await response.json();
-        } catch (error) {
-          log('API Error: ' + error.message, true);
-          throw error;
-        }
-      }
-
-      // Logging with colored output
-      function log(msg, isError) {
-        var output = document.getElementById('output');
-        var timestamp = new Date().toLocaleTimeString();
-        var className = isError ? 'output-error' : 'output-info';
-
-        var line = document.createElement('div');
-        line.className = 'output-line';
-        line.innerHTML = '<span class="output-time">[' + timestamp + ']</span>' +
-                       '<span class="' + className + '">' + (isError ? '❌ ' : '✓ ') + msg + '</span>';
-
-        output.insertBefore(line, output.firstChild);
-
-        // Keep only last 50 lines
-        while (output.children.length > 50) {
-          output.removeChild(output.lastChild);
-        }
-      }
-
-      function clearLog() {
-        document.getElementById('output').innerHTML = '<div class="output-line"><span class="output-info">Ready...</span></div>';
-      }
-
-      // Update status
-      function setStatus(online) {
-        var status = document.getElementById('status');
-        status.className = 'status-badge ' + (online ? 'online' : 'offline');
-        status.querySelector('span').textContent = online ? 'Online' : 'Offline';
-      }
-
-      // Refresh state
-      window.refreshState = async function() {
-        if (isLoading) return;
-        try {
-          log('Refreshing state...');
-          var state = await api('/state');
-          currentState.repositories = state.repositories || [];
-          currentState.config = state.config || {};
-          updateUI();
-          populateRepoSelect();
-          setStatus(true);
-          log('State refreshed successfully');
-        } catch (error) {
-          setStatus(false);
-          log('Failed to refresh state: ' + error.message, true);
-        }
-      }
-
-      // Update UI
-      function updateUI() {
-        var repos = currentState.repositories || [];
-        document.getElementById('repoCount').textContent = repos.length;
-        document.getElementById('hooksCount').textContent = repos.filter(function(r) { return r.hasHooks; }).length;
-        document.getElementById('commitsCount').textContent = repos.reduce(function(sum, r) {
-          return sum + (r.recentCommits ? r.recentCommits.length : 0);
-        }, 0);
-
-        var repoList = document.getElementById('repoList');
-        if (repos.length) {
-          repoList.innerHTML = '';
-          repos.forEach(function(repo) {
-            var card = document.createElement('div');
-            card.className = 'repo-card';
-
-            var hooksBadgeClass = repo.hasHooks ? 'hooks-on' : 'hooks-off';
-            var hooksBadgeText = repo.hasHooks ? '✓ Hooks' : '○ No Hooks';
-            var branchHtml = repo.branch ? '<span class="badge branch">🌿 ' + escapeHtml(repo.branch.substring(0, 12)) + '</span>' : '';
-
-            card.innerHTML =
-              '<div class="repo-header">' +
-                '<div class="repo-name"><div class="repo-icon">📁</div>' + escapeHtml(repo.name) + '</div>' +
-                '<span class="badge ' + hooksBadgeClass + '">' + hooksBadgeText + '</span>' +
-              '</div>' +
-              '<div class="repo-path">' + escapeHtml(repo.path) + '</div>' +
-              '<div class="repo-meta">' + branchHtml + '</div>' +
-              '<div class="repo-actions">' +
-                '<button class="btn btn-sm btn-secondary">Select</button> ' +
-                '<button class="btn btn-sm ' + (repo.hasHooks ? 'btn-warning' : 'btn-success') + '">' +
-                (repo.hasHooks ? 'Remove Hooks' : 'Install Hooks') +
-                '</button>' +
-              '</div>';
-
-            // Add click handlers using data attributes
-            var selectBtn = card.querySelector('.btn-secondary');
-            selectBtn.onclick = (function(p) { return function() { selectRepo(p); }; })(repo.path);
-
-            var hooksBtn = card.querySelector('.btn-warning, .btn-success');
-            hooksBtn.onclick = (function(p, hasHooks) { return function() {
-              if (hasHooks) { uninstallHooksFor(p); } else { installHooksFor(p); }
-            }; })(repo.path, repo.hasHooks);
-
-            repoList.appendChild(card);
-          });
-        } else {
-          repoList.innerHTML = '<div class="loading">' +
-            '<div style="font-size: 48px; margin-bottom: 16px;">📭</div>' +
-            '<p>No repositories found</p>' +
-            '<p class="text-muted text-sm">Click "Scan All Repositories" to discover Git repositories</p>' +
-          '</div>';
-        }
-      }
-
-      // Populate repo select
-      function populateRepoSelect() {
-        var select = document.getElementById('commitRepo');
-        var repos = currentState.repositories || [];
-        if (repos.length) {
-          select.innerHTML = '<option value="">Select repository...</option>';
-          repos.forEach(function(repo) {
-            var option = document.createElement('option');
-            option.value = repo.path;
-            option.textContent = repo.name;
-            select.appendChild(option);
-          });
-        } else {
-          select.innerHTML = '<option value="">No repositories - scan first</option>';
-        }
-      }
-
-      // Scan repositories
-      window.scanRepos = async function() {
-        if (isLoading) return;
-        isLoading = true;
-
-        var dirInput = document.getElementById('scanDir');
-        var dir = dirInput ? dirInput.value : '';
-
-        log('Scanning for git repositories' + (dir ? ' in ' + dir : ' in all project directories...'));
-
-        // Show loading state
-        var repoList = document.getElementById('repoList');
-        repoList.innerHTML = '<div class="loading"><div class="spinner"></div><p style="margin-top: 16px;">Scanning... This may take a moment</p></div>';
-
-        try {
-          var result = await api('/scan', { query: { dir: dir } });
-          currentState.repositories = result.repositories || [];
-          currentState.config = result.config || {};
-          log('✓ Found ' + currentState.repositories.length + ' repositories');
-          updateUI();
-          populateRepoSelect();
-          setStatus(true);
-        } catch (error) {
-          log('Scan failed: ' + error.message, true);
-          repoList.innerHTML = '<div class="loading"><p style="color: var(--danger);">Scan failed: ' + escapeHtml(error.message) + '</p></div>';
-        } finally {
-          isLoading = false;
-        }
-      }
-
-      // Get current directory
-      async function getCurrentDir() {
-        try {
-          var resp = await fetch(API_BASE + '/state');
-          if (resp.ok) {
-            var state = await resp.json();
-            if (state.config && state.config.workingDir) {
-              return state.config.workingDir;
-            }
-          }
-          return null;
-        } catch (e) {
-          return null;
-        }
-      }
-
-      // Load current repo
-      window.loadCurrentRepo = async function() {
-        log('Loading current repository...');
-
-        var workingDir = await getCurrentDir();
-        if (!workingDir) {
-          workingDir = 'C:\\Users\\Yanis\\Projects\\-plugins\\claude-git';
-        }
-
-        try {
-          var result = await api('/repo', { query: { path: workingDir } });
-          if (result) {
-            document.getElementById('currentRepoCard').classList.remove('hidden');
-            document.getElementById('repoName').textContent = result.name || 'Unknown';
-            document.getElementById('repoPath').textContent = result.path || 'N/A';
-            document.getElementById('repoBranch').textContent = result.branch || 'main';
-            var hooksBadge = document.getElementById('repoHooks');
-            hooksBadge.textContent = result.hasHooks ? 'Installed' : 'Not Installed';
-            hooksBadge.className = 'badge ' + (result.hasHooks ? 'hooks-on' : 'hooks-off');
-            log('✓ Loaded: ' + result.name);
-            setStatus(true);
-          }
-        } catch (error) {
-          log('Load failed: ' + error.message, true);
-        }
-      }
-
-      // Select repo
-      window.selectRepo = function(path) {
-        log('Selected: ' + path);
-        document.getElementById('currentRepoCard').classList.remove('hidden');
-        document.getElementById('repoPath').textContent = path;
-
-        var repo = (currentState.repositories || []).find(function(r) { return r.path === path; });
-        if (repo) {
-          document.getElementById('repoName').textContent = repo.name;
-          document.getElementById('repoBranch').textContent = repo.branch || 'main';
-          var hooksBadge = document.getElementById('repoHooks');
-          hooksBadge.textContent = repo.hasHooks ? 'Installed' : 'Not Installed';
-          hooksBadge.className = 'badge ' + (repo.hasHooks ? 'hooks-on' : 'hooks-off');
-        }
-      }
-
-      // Install hooks
-      async function installHooks() {
-        var path = document.getElementById('repoPath').textContent;
-        if (path && path !== '-') {
-          await window.installHooksFor(path);
-        } else {
-          log('No repository selected', true);
-        }
-      }
-
-      async function installHooksFor(path) {
-        log('Installing hooks for: ' + path);
-        try {
-          await api('/repo/hooks/install', { method: 'POST', body: { path: path } });
-          log('✓ Hooks installed successfully!');
-          await refreshState();
-        } catch (error) {
-          log('Install failed: ' + error.message, true);
-        }
-      }
-      window.installHooksFor = installHooksFor;
-
-      // Uninstall hooks
-      async function uninstallHooks() {
-        var path = document.getElementById('repoPath').textContent;
-        if (path && path !== '-') {
-          await uninstallHooksFor(path);
-        } else {
-          log('No repository selected', true);
-        }
-      }
-
-      async function uninstallHooksFor(path) {
-        log('Uninstalling hooks from: ' + path);
-        try {
-          await api('/repo/hooks/uninstall', { method: 'POST', body: { path: path } });
-          log('✓ Hooks uninstalled!');
-          await refreshState();
-        } catch (error) {
-          log('Uninstall failed: ' + error.message, true);
-        }
-      }
-      window.uninstallHooksFor = uninstallHooksFor;
-
-      // Commit functions
-      function updateCommitPreview() {
-        var type = document.getElementById('commitType').value;
-        var project = document.getElementById('commitProject').value || 'Project';
-        var version = document.getElementById('commitVersion').value || 'v1.0.0';
-        var description = document.getElementById('commitDescription').value;
-        var message = type + ': ' + project + ' - ' + version + (description ? '\n\n' + description : '');
-        document.getElementById('commitPreview').textContent = message;
-      }
-
-      function clearCommitForm() {
-        document.getElementById('commitRepo').selectedIndex = 0;
-        document.getElementById('commitProject').value = '';
-        document.getElementById('commitVersion').value = '';
-        document.getElementById('commitDescription').value = '';
-        document.getElementById('commitPreview').textContent = 'TYPE: Project Name - vX.Y.Z';
-        document.getElementById('versionSuggestions').innerHTML = '';
-      }
-
-      window.onCommitRepoChange = function() {
-        var path = document.getElementById('commitRepo').value;
-        if (path) {
-          suggestVersion();
-        }
-      }
-
-      async function suggestVersion() {
-        var path = document.getElementById('commitRepo').value;
-        var container = document.getElementById('versionSuggestions');
-
-        if (!path) {
-          container.innerHTML = '';
-          return;
-        }
-
-        log('Getting version suggestions for: ' + path);
-        try {
-          var suggestions = await api('/suggest/version', { query: { path: path } });
-
-          if (suggestions.PATCH || suggestions.UPDATE || suggestions.RELEASE) {
-            container.innerHTML = '<span class="text-muted text-sm">Suggested: </span>' +
-              (suggestions.PATCH ? '<button class="btn btn-xs btn-secondary" onclick="setVersion(\'' + suggestions.PATCH + '\')">🔧 ' + suggestions.PATCH + '</button>' : '') +
-              (suggestions.UPDATE ? '<button class="btn btn-xs btn-secondary" onclick="setVersion(\'' + suggestions.UPDATE + '\')">✨ ' + suggestions.UPDATE + '</button>' : '') +
-              (suggestions.RELEASE ? '<button class="btn btn-xs btn-secondary" onclick="setVersion(\'' + suggestions.RELEASE + '\')">🚀 ' + suggestions.RELEASE + '</button>' : '');
-          } else {
-            container.innerHTML = '<span class="text-muted text-sm">No previous tags found</span>';
-          }
-        } catch (error) {
-          container.innerHTML = '<span style="color: var(--danger);">Failed to get suggestions</span>';
-        }
-      }
-
-      function setVersion(version) {
-        document.getElementById('commitVersion').value = version;
-        updateCommitPreview();
-      }
-
-      async function createCommit() {
-        var path = document.getElementById('commitRepo').value;
-        var type = document.getElementById('commitType').value;
-        var project = document.getElementById('commitProject').value;
-        var version = document.getElementById('commitVersion').value;
-        var description = document.getElementById('commitDescription').value;
-
-        if (!path) {
-          log('Please select a repository', true);
-          return;
-        }
-        if (!project) {
-          log('Please enter a project name', true);
-          return;
-        }
-        if (!version) {
-          log('Please enter a version', true);
-          return;
-        }
-
-        var message = type + ': ' + project + ' - ' + version + (description ? '\n\n' + description : '');
-
-        log('Creating commit...');
-        try {
-          var result = await api('/repo/commit', {
-            method: 'POST',
-            body: { repoPath: path, type: type, project: project, version: version, body: description }
-          });
-          log('✓ Commit created successfully!');
-          clearCommitForm();
-          await refreshState();
-        } catch (error) {
-          log('Commit failed: ' + error.message, true);
-        }
-      }
-
-      // Keyboard shortcuts
-      document.addEventListener('keydown', function(e) {
-        if (e.key === 'r' && e.ctrlKey) {
-          e.preventDefault();
-          refreshState();
-        }
-      });
-
-      // Escape HTML
-      function escapeHtml(text) {
-        var div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-      }
-
-      // Initialize
-      clearLog();
-      log('Git Flow Master Ready - Press Ctrl+R to refresh');
-      log('Auto-scanning for repositories...');
-      scanRepos();
-
-      // Expose functions globally
-      window.updateCommitPreview = updateCommitPreview;
-      window.createCommit = createCommit;
-      window.setVersion = setVersion;
-      window.suggestVersion = suggestVersion;
-    })();
-  </script>
+  <script src="app.js"></script>
+  <script src="app-v070.js"></script>
 </body>
 </html>

@@ -47,3 +47,4 @@ tmp/
 
 # Release notification config (may contain secrets)
 .release-notify.json
+# UI Backups\n*.backup\n
