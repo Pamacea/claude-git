@@ -1,7 +1,7 @@
 {
   "name": "claude-git",
   "description": "Git automation and workflow tools for Claude Code with Versioned Release Convention",
-  "version": "0.5.0",
+  "version": "0.7.2",
   "author": {
     "name": "Yanis"
   },

@@ -25,7 +25,7 @@ async function npmInstall(dir, name) {
     const proc = spawn('npm', ['install'], {
       cwd: dir,
       stdio: 'inherit',
-      shell: true
+      shell: false
     });
 
     proc.on('error', (err) => {
@@ -50,7 +50,7 @@ async function npmInstall(dir, name) {
 function checkNpm() {
   const result = spawnSync('npm', ['--version'], {
     stdio: 'pipe',
-    shell: true
+    shell: false
   });
   return result.status === 0;
 }

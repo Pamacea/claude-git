@@ -1,6 +1,6 @@
 {
   "name": "git-flow-master-web",
-  "version": "0.5.2",
+  "version": "0.7.2",
   "description": "Git Flow Master - Web Interface for Git conventions management",
   "main": "server.js",
   "scripts": {

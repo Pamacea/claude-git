@@ -21,175 +21,38 @@ import {
   ReadResourceRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
 
-import { spawn } from 'child_process';
-import { promises as fs } from 'fs';
-import path from 'path';
-import os from 'os';
-import { fileURLToPath } from 'url';
 import crypto from 'crypto';
+import { fileURLToPath } from 'url';
+import path from 'path';
+
+// Import shared utilities from lib/
+import {
+  execSecure,
+  validateRepoPath,
+  sanitizeFilePath,
+  sanitizeCommitMessage,
+  parseCommitMessage,
+  generateCommitMessage,
+  parseVersion,
+  bumpVersion,
+  validateVersion,
+  loadConfig,
+  saveConfig,
+  loadState,
+  saveState,
+  fileExists,
+  ALLOWED_BASE_PATHS,
+} from '../lib/index.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-// Data paths
-const DATA_DIR = path.join(os.homedir(), '.git-flow-master');
-const CONFIG_FILE = path.join(DATA_DIR, 'config.json');
-const STATE_FILE = path.join(DATA_DIR, 'state.json');
-
-// Security: Allowed base paths for repository access
-const ALLOWED_BASE_PATHS = [
-  os.homedir(),
-  process.cwd(),
-  path.join(os.homedir(), 'Projects'),
-  path.join(os.homedir(), 'workspace'),
-  path.join(os.homedir(), 'dev'),
-  path.join(os.homedir(), 'code'),
-].filter(p => p); // Filter undefined
 
 // Rate limiting
 const rateLimitMap = new Map();
 const RATE_LIMIT_WINDOW = 60000; // 1 minute
 const RATE_LIMIT_MAX = 100; // requests per window
 
-// ============ SECURITY UTILITIES ============
-
-/**
- * Secure command execution using spawn (no shell interpretation)
- */
-function execSecure(command, args, options = {}) {
-  return new Promise((resolve, reject) => {
-    const proc = spawn(command, args, {
-      cwd: options.cwd,
-      encoding: 'utf-8',
-      timeout: options.timeout || 30000, // 30s timeout
-      maxBuffer: 1024 * 1024, // 1MB max
-    });
-
-    let stdout = '';
-    let stderr = '';
-
-    proc.stdout.on('data', (data) => stdout += data);
-    proc.stderr.on('data', (data) => stderr += data);
-
-    proc.on('close', (code) => {
-      if (code === 0) {
-        resolve(stdout.trim());
-      } else {
-        reject(new Error(`Command failed with code ${code}: ${stderr.slice(0, 200)}`));
-      }
-    });
-
-    proc.on('error', (err) => {
-      reject(new Error(`Command execution error: ${err.message}`));
-    });
-  });
-}
-
-/**
- * Validate repository path to prevent traversal attacks
- */
-async function validateRepoPath(repoPath) {
-  if (!repoPath || typeof repoPath !== 'string') {
-    throw new Error('Repository path is required and must be a string');
-  }
-
-  // Normalize and resolve the path
-  const resolved = path.resolve(repoPath);
-
-  // Check for null bytes (path truncation attack)
-  if (resolved.includes('\0')) {
-    throw new Error('Invalid path: contains null bytes');
-  }
-
-  // Check against allowed base paths
-  const isAllowed = ALLOWED_BASE_PATHS.some(allowed => {
-    const normalizedAllowed = path.resolve(allowed);
-    return resolved.startsWith(normalizedAllowed + path.sep) || resolved === normalizedAllowed;
-  });
-
-  if (!isAllowed) {
-    throw new Error('Access denied: path outside allowed directories');
-  }
-
-  // Verify it's a git repository
-  const gitDir = path.join(resolved, '.git');
-  try {
-    const stat = await fs.stat(gitDir);
-    if (!stat.isDirectory()) {
-      throw new Error('Not a git repository');
-    }
-  } catch {
-    throw new Error('Not a git repository or path does not exist');
-  }
-
-  return resolved;
-}
-
-/**
- * Validate version string (semver)
- */
-function validateVersion(version) {
-  if (!version || typeof version !== 'string') {
-    return false;
-  }
-  // Strict semver pattern
-  const semverPattern = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/;
-  return semverPattern.test(version);
-}
-
-/**
- * Sanitize commit message (remove dangerous characters)
- */
-function sanitizeCommitMessage(message) {
-  if (!message || typeof message !== 'string') {
-    throw new Error('Commit message must be a non-empty string');
-  }
-
-  // Remove null bytes and control characters except newline
-  let sanitized = message.replace(/[\x00-\x09\x0B-\x1F\x7F]/g, '');
-
-  // Limit length
-  if (sanitized.length > 5000) {
-    throw new Error('Commit message too long (max 5000 characters)');
-  }
-
-  return sanitized;
-}
-
-/**
- * Sanitize file path (for git add)
- */
-function sanitizeFilePath(filePath) {
-  if (!filePath || typeof filePath !== 'string') {
-    throw new Error('File path must be a non-empty string');
-  }
-
-  // Remove null bytes
-  let sanitized = filePath.replace(/\0/g, '');
-
-  // Prevent absolute paths that could escape
-  if (path.isAbsolute(sanitized)) {
-    // Allow only if within cwd
-    const resolved = path.resolve(sanitized);
-    if (!resolved.startsWith(process.cwd())) {
-      throw new Error('Absolute paths must be within current working directory');
-    }
-  }
-
-  // Prevent parent directory traversal
-  if (sanitized.includes('..')) {
-    const resolved = path.resolve(sanitized);
-    if (!resolved.startsWith(process.cwd())) {
-      throw new Error('Path traversal not allowed');
-    }
-  }
-
-  return sanitized;
-}
-
-/**
- * Rate limiting check
- */
+// Rate limiting check
 function checkRateLimit(clientId = 'default') {
   const now = Date.now();
   const clientData = rateLimitMap.get(clientId) || { count: 0, windowStart: now };
@@ -210,171 +73,10 @@ function checkRateLimit(clientId = 'default') {
   rateLimitMap.set(clientId, clientData);
 }
 
-/**
- * Hash sensitive data for logging
- */
+// Hash sensitive data for logging
 function hashForLog(data) {
   if (!data) return '[null]';
   return crypto.createHash('sha256').update(String(data)).digest('hex').slice(0, 8);
-}
-
-// ============ FILE OPERATIONS ============
-
-async function fileExists(filePath) {
-  try {
-    await fs.access(filePath);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-async function loadConfig() {
-  try {
-    if (await fileExists(CONFIG_FILE)) {
-      const content = await fs.readFile(CONFIG_FILE, 'utf-8');
-      return JSON.parse(content);
-    }
-  } catch (error) {
-    console.error('Failed to load config:', error.message);
-  }
-  return getDefaultConfig();
-}
-
-async function saveConfig(config) {
-  await fs.mkdir(DATA_DIR, { recursive: true });
-
-  // Set secure file permissions
-  const content = JSON.stringify(config, null, 2);
-  await fs.writeFile(CONFIG_FILE, content, { mode: 0o600 });
-}
-
-async function loadState() {
-  try {
-    if (await fileExists(STATE_FILE)) {
-      const content = await fs.readFile(STATE_FILE, 'utf-8');
-      return JSON.parse(content);
-    }
-  } catch (error) {
-    console.error('Failed to load state:', error.message);
-  }
-  return { repositories: [], activeHooks: {}, lastSync: null };
-}
-
-async function saveState(state) {
-  await fs.mkdir(DATA_DIR, { recursive: true });
-  await fs.writeFile(STATE_FILE, JSON.stringify(state, null, 2), { mode: 0o600 });
-}
-
-function getDefaultConfig() {
-  return {
-    projectName: 'My Project',
-    commit: {
-      convention: 'versioned-release',
-      types: {
-        RELEASE: { description: 'Major release - Breaking changes, new major version', emoji: '🚀', semverBump: 'MAJOR', format: 'RELEASE: {project} - v{version}' },
-        UPDATE: { description: 'Minor update - New features, enhancements', emoji: '✨', semverBump: 'MINOR', format: 'UPDATE: {project} - v{version}' },
-        PATCH: { description: 'Patch - Bug fixes, small improvements', emoji: '🔧', semverBump: 'PATCH', format: 'PATCH: {project} - v{version}' }
-      },
-      rules: {
-        subjectMinLength: 10,
-        subjectMaxLength: 100,
-        bodyLineLength: 100,
-        requireVersion: true,
-        requireProjectName: true,
-        versionPattern: 'v\\d+\\.\\d+\\.\\d+',
-        projectNameMaxLength: 50
-      },
-      amend: {
-        enabled: true,
-        maxAmends: 10,
-        requireSameDay: true,
-        autoIncrementPatch: false,
-        keepVersion: true,
-        allowedForTypes: ['PATCH', 'UPDATE']
-      }
-    },
-    hooks: {
-      preCommit: { enabled: true, lint: true, typecheck: true, test: false, secretScan: true },
-      commitMsg: { enabled: true, validate: true, enforceVersionedFormat: true, allowAmend: true }
-    },
-    branch: { mainBranch: 'main', developBranch: 'develop' }
-  };
-}
-
-// ============ GIT OPERATIONS ============
-
-// Parse Versioned Release Convention message
-function parseCommitMessage(message) {
-  // Versioned Release Convention Pattern: TYPE: PROJECT NAME - vVERSION
-  const versionedPattern = /^(RELEASE|UPDATE|PATCH):\s*([A-Za-z0-9_ -]+?)\s*-\s*(v[0-9]+\.[0-9]+\.[0-9]+)([\s\S]*)$/;
-  const match = message.match(versionedPattern);
-
-  if (match) {
-    return {
-      valid: true,
-      convention: 'versioned-release',
-      type: match[1],
-      project: match[2].trim(),
-      version: match[3],
-      body: match[4].trim() || null,
-      fullMessage: message
-    };
-  }
-
-  // Legacy Conventional Commits support (for backward compatibility)
-  const conventionalPattern = /^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([^)]+\))?!?:\s*(.+)/;
-  const legacyMatch = message.match(conventionalPattern);
-  if (legacyMatch) {
-    return {
-      valid: true,
-      convention: 'conventional',
-      type: legacyMatch[1],
-      scope: legacyMatch[2] ? legacyMatch[2].slice(1, -1) : null,
-      breaking: message.includes('!'),
-      description: legacyMatch[3],
-      fullMessage: message
-    };
-  }
-
-  return { valid: false, error: 'Does not match Versioned Release Convention or Conventional Commits format' };
-}
-
-// Generate Versioned Release Convention message
-function generateCommitMessage(type, project, version, body, description = null) {
-  // Versioned Release Convention format
-  let message = `${type}: ${project} - ${version}`;
-
-  // Add body/description if provided
-  const bodyContent = description || body;
-  if (bodyContent) {
-    message += `\n\n${bodyContent}`;
-  }
-
-  return message;
-}
-
-// Version utilities
-function parseVersion(version) {
-  const match = version.match(/v?(\d+)\.(\d+)\.(\d+)/);
-  if (!match) return null;
-  return {
-    major: parseInt(match[1], 10),
-    minor: parseInt(match[2], 10),
-    patch: parseInt(match[3], 10)
-  };
-}
-
-function bumpVersion(parsed, type) {
-  switch (type) {
-    case 'RELEASE':
-      return `v${parsed.major + 1}.0.0`;
-    case 'UPDATE':
-      return `v${parsed.major}.${parsed.minor + 1}.0`;
-    case 'PATCH':
-    default:
-      return `v${parsed.major}.${parsed.minor}.${parsed.patch + 1}`;
-  }
 }
 
 // ============ MCP SERVER ============

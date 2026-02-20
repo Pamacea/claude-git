@@ -46,7 +46,7 @@ function installDependencies(dir, name) {
     const proc = spawn('npm', ['install'], {
       cwd: dir,
       stdio: 'inherit',
-      shell: true,
+      shell: false,
       windowsHide: true
     });
 

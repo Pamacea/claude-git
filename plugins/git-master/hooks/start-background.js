@@ -64,7 +64,7 @@ async function installDependencies() {
     const proc = spawn('node', [installScript], {
       cwd: pluginRoot,
       stdio: 'inherit',
-      shell: true,
+      shell: false,
       windowsHide: true
     });
 

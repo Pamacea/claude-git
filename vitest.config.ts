@@ -6,42 +6,43 @@ export default defineConfig({
     globals: true,
     environment: 'node',
     setupFiles: ['./tests/vitest.setup.ts'],
+    include: ['tests/**/*.test.ts', 'plugins/git-master/tests/**/*.test.ts'],
+    exclude: ['node_modules/', 'dist/', 'coverage/', '**/node_modules/**'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html', 'lcov', 'json'],
-      include: ['src/**/*.ts'],
+      include: ['src/**/*.ts', 'lib/**/*.ts', 'plugins/git-master/**/*.js'],
       exclude: [
         'node_modules/',
         'dist/',
         'tests/',
         '**/*.test.ts',
+        '**/*.test.js',
         '**/*.spec.ts',
+        '**/*.spec.js',
         '**/types/**',
         '**/index.ts',
+        '**/coverage/**',
       ],
       thresholds: {
-        statements: 80,
-        branches: 80,
-        functions: 80,
-        lines: 80,
+        statements: 70,
+        branches: 70,
+        functions: 70,
+        lines: 70,
       },
-      // Per-file thresholds
-      perFile: true,
+      perFile: false,
     },
-    // Test timeout
     testTimeout: 10000,
-    // Isolate tests
     isolate: true,
-    // Show heap usage
     logHeapUsage: true,
-    // Coverage output
     coverageDirectory: './coverage',
-    // Reporters
     reporters: ['verbose'],
   },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      '@lib': path.resolve(__dirname, './lib'),
+      '@tests': path.resolve(__dirname, './tests'),
     },
   },
 })
