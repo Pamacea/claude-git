@@ -1,13 +1,13 @@
 {
-  "name": "git-flow-master",
-  "description": "Advanced Git automation with Versioned Release Convention (RELEASE/UPDATE/PATCH), smart releases, amend workflow, and conflict resolution",
-  "version": "0.7.2",
+  "name": "aureus",
+  "description": "Aureus - Advanced Git automation with Versioned Release Convention (RELEASE/UPDATE/PATCH), smart releases, amend workflow, and conflict resolution",
+  "version": "0.8.0",
   "author": {
     "name": "Yanis"
   },
-  "repository": "https://github.com/Pamacea/claude-git",
+  "repository": "https://github.com/Pamacea/aureus",
   "license": "MIT",
-  "keywords": ["git", "automation", "versioned-release", "semantic-versioning", "release", "merge-conflict"],
+  "keywords": ["aureus", "git", "automation", "versioned-release", "semantic-versioning", "release", "merge-conflict"],
   "skills": "./skills/",
   "commands": "./skills/",
   "hooks": {

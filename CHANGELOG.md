@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.8.0] - 2026-02-21
+
+### 🏛️ Project Renaming
+
+#### Major Change
+- **Renamed:** Project renamed from "Git Flow Master" to **"Aureus"**
+  - Named after the ancient Roman gold coin, symbolizing quality and excellence
+  - New package name: `aureus` (was `claude-git`)
+  - New repository: https://github.com/Pamacea/aureus
+  - All documentation updated to reflect new branding
+
+#### Updated Files
+- **package.json** - Name changed to `aureus`, version bumped to 0.8.0
+- **README.md** - All references updated to Aureus
+- **CLAUDE.md** - Project configuration updated
+- **CHANGELOG.md** - Changelog updated with v0.8.0 entry
+- **All plugin.json** files - Name and description updated
+- **tests/README.md** - Test suite documentation updated
+
+#### Breaking Changes
+None - This is purely a branding change with no functional impact
+
+---
+
 ## [0.7.2] - 2026-02-20
 
 ### 🚀 Performance Improvements

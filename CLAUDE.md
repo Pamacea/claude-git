@@ -1,12 +1,14 @@
-# Claude Git - Plugin Configuration
+# Aureus - Plugin Configuration
 
-> **Version:** 0.7.2 | **Last Updated:** 2026-02-20
+> **Version:** 0.8.0 | **Last Updated:** 2026-02-20
 
 ---
 
 ## Project Overview
 
-**Claude Git** is a comprehensive Git automation plugin for Claude Code implementing **Versioned Release Convention** with intelligent commit management, auto-releases, and cross-platform hooks.
+**Aureus** is a comprehensive Git automation plugin for Claude Code implementing **Versioned Release Convention** with intelligent commit management, auto-releases, and cross-platform hooks.
+
+*Named after the ancient Roman gold coin, symbolizing quality and excellence in Git workflow automation.*
 
 ---
 
@@ -54,18 +56,18 @@ TYPE: PROJECT NAME - vVERSION
 ### Examples
 
 ```
-RELEASE: Git Flow Master - v2.0.0
+RELEASE: Aureus - v2.0.0
 
 - Breaking: Redesigned commit message format
 - Breaking: Changed hook configuration structure
 - Added: New amend workflow for small fixes
 
-UPDATE: Git Flow Master - v1.1.0
+UPDATE: Aureus - v1.1.0
 
 - Added: Web interface for repository management
 - Added: Version suggestion API endpoint
 
-PATCH: Git Flow Master - v1.0.1
+PATCH: Aureus - v1.0.1
 
 - Fixed: Pre-commit hook secret scanning pattern
 - Fixed: Commit message validation edge case

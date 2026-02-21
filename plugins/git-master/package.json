@@ -1,7 +1,7 @@
 {
-  "name": "git-flow-master",
-  "version": "0.7.2",
-  "description": "Advanced Git automation plugin for Claude Code",
+  "name": "aureus",
+  "version": "0.8.0",
+  "description": "Aureus - Advanced Git automation plugin for Claude Code",
   "license": "MIT",
   "scripts": {
     "postinstall": "node hooks/install-dependencies.js",

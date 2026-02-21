@@ -1,6 +1,6 @@
-# ⚡ Claude Git - Git Flow Master Plugin
+# 🏛️ Aureus - Aureus Plugin
 
-> **Version:** 0.7.2
+> **Version:** 0.8.0
 > **Author:** Yanis
 > **Category:** Version Control
 
@@ -8,7 +8,9 @@
 
 ## 🎯 Overview
 
-**Claude Git** is a comprehensive Git automation plugin for Claude Code that implements the **Versioned Release Convention** - a structured approach to commit messages and version management, with a **premium modern UI** inspired by CloudMem.
+**Aureus** is a comprehensive Git automation plugin for Claude Code that implements the **Versioned Release Convention** - a structured approach to commit messages and version management, with a **premium modern UI**.
+
+*Named after the ancient Roman gold coin, symbolizing quality, value, and excellence in Git workflow automation.*
 
 ### ✨ Key Features
 
@@ -49,14 +51,14 @@
 
 ```bash
 # In Claude Code
-/install-plugin claude-git
+/install-plugin aureus
 ```
 
 ### Manual Installation
 
 ```bash
-git clone https://github.com/Pamacea/claude-git.git
-cd claude-git
+git clone https://github.com/Pamacea/aureus.git
+cd aureus
 npm install
 ```
 
@@ -140,7 +142,7 @@ TYPE: PROJECT NAME - vVERSION
 
 #### RELEASE Example (Major)
 ```
-RELEASE: Git Flow Master - v2.0.0
+RELEASE: Aureus - v2.0.0
 
 - Breaking: Redesigned commit message format
 - Breaking: Changed hook configuration structure
@@ -149,7 +151,7 @@ RELEASE: Git Flow Master - v2.0.0
 
 #### UPDATE Example (Minor)
 ```
-UPDATE: Git Flow Master - v1.1.0
+UPDATE: Aureus - v1.1.0
 
 - Added: Premium web interface with light/dark theme
 - Added: Auto-start on session launch
@@ -159,7 +161,7 @@ UPDATE: Git Flow Master - v1.1.0
 
 #### PATCH Example (Patch)
 ```
-PATCH: Git Flow Master - v1.0.1
+PATCH: Aureus - v1.0.1
 
 - Fixed: Memory leak in event listeners
 - Fixed: XSS vulnerability in API responses
@@ -456,7 +458,7 @@ PATCH: My Project - v1.0.1
 ## 📁 Project Structure
 
 ```
-claude-git/
+aureus/
 ├── .claude-plugin/
 │   └── marketplace.json       # Marketplace configuration
 ├── plugins/
@@ -567,8 +569,8 @@ MIT © Yanis
 - [Web Interface README](./plugins/git-master/web/README.md)
 - [MCP Server README](./plugins/git-master/mcp/README.md)
 - [Hooks README](./plugins/git-master/hooks/README.md)
-- [GitHub Repository](https://github.com/Pamacea/claude-git)
-- [Issue Tracker](https://github.com/Pamacea/claude-git/issues)
+- [GitHub Repository](https://github.com/Pamacea/aureus)
+- [Issue Tracker](https://github.com/Pamacea/aureus/issues)
 
 ---
 

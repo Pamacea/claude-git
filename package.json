@@ -1,7 +1,7 @@
 {
-  "name": "claude-git",
-  "version": "0.7.2",
-  "description": "Git Flow Master - Comprehensive Git automation plugin for Claude Code",
+  "name": "aureus",
+  "version": "0.8.0",
+  "description": "Aureus - Intelligent Git automation with Versioned Release Convention for Claude Code",
   "license": "MIT",
   "type": "module",
   "exports": {

@@ -1,11 +1,11 @@
 {
-  "name": "git-flow-master-mcp",
-  "version": "0.7.2",
-  "description": "Git Flow Master - MCP Server for Claude Code integration",
+  "name": "aureus-mcp",
+  "version": "0.8.0",
+  "description": "Aureus - MCP Server for Claude Code integration",
   "type": "module",
   "main": "server.js",
   "bin": {
-    "git-flow-mcp": "./server.js"
+    "aureus-mcp": "./server.js"
   },
   "scripts": {
     "start": "node server.js",
@@ -24,7 +24,7 @@
   },
   "author": "Yanis",
   "license": "MIT",
-  "keywords": ["mcp", "git", "conventional-commits", "claude", "claude-code"],
+  "keywords": ["aureus", "mcp", "git", "conventional-commits", "claude", "claude-code"],
   "files": [
     "server.js",
     "server.original.js",

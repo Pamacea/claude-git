@@ -1,6 +1,6 @@
 # Test Suite
 
-This directory contains the Vitest test suite for the Git Flow Master plugin.
+This directory contains the Vitest test suite for the Aureus plugin.
 
 ## Structure
 
