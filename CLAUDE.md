@@ -1,6 +1,6 @@
 # Aureus - Plugin Configuration
 
-> **Version:** 0.8.0 | **Last Updated:** 2026-02-20
+> **Version:** 0.8.1 | **Last Updated:** 2026-02-21
 
 ---
 

@@ -1,6 +1,6 @@
 /**
  * Configuration Storage
- * Load and save Git Flow Master configuration
+ * Load and save Aureus configuration
  */
 export interface CommitTypeConfig {
     description: string;

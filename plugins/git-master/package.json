@@ -1,10 +1,13 @@
 {
   "name": "aureus",
-  "version": "0.8.0",
+  "version": "0.8.2",
   "description": "Aureus - Advanced Git automation plugin for Claude Code",
   "license": "MIT",
   "scripts": {
-    "postinstall": "node hooks/install-dependencies.js",
+    "postinstall": "node hooks/install-dependencies.js && echo \"✓ Aureus plugin installed - Run 'npm run start-web' to start the web server\"",
+    "start-web": "cd web && npm start",
+    "start-mcp": "cd mcp && npm start",
+    "clean-cache": "node hooks/clean-cache.js",
     "test": "vitest run",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",

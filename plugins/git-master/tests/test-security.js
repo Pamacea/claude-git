@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Git Flow Master - Security Tests
+ * Aureus - Security Tests
  * Tests security features of the web server
  */
 

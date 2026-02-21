@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Git Flow Master - MCP Server
+ * Aureus - MCP Server
  * Provides Git operations via Model Context Protocol (MCP)
  */
 

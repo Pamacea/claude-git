@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Git Flow Master - Pre Git Commit Check Hook
+# Aureus - Pre Git Commit Check Hook
 # Validates git commit messages against Versioned Release Convention
 # Only processes git commands to avoid latency on other commands
 

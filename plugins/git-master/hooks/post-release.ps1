@@ -1,4 +1,4 @@
-# Git Flow Master - Post-Release Hook for Windows PowerShell
+# Aureus - Post-Release Hook for Windows PowerShell
 # Runs after a release is created to update changelog and notify
 #
 # Usage: ./post-release.sh <tag-name>

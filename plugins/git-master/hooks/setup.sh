@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# Git Flow Master - Setup Script
+# Aureus - Setup Script
 # Makes hook scripts executable
 
-echo "Setting up Git Flow Master hooks..."
+echo "Setting up Aureus hooks..."
 echo ""
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

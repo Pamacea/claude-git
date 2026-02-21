@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Git Flow Master - Master Test Runner
+ * Aureus - Master Test Runner
  * Runs all tests and generates a report
  */
 
@@ -18,7 +18,7 @@ const TEST_FILES = [
 ];
 
 console.log('╔══════════════════════════════════════════╗');
-console.log('║   Git Flow Master - Test Suite Runner   ║');
+console.log('║   Aureus - Test Suite Runner   ║');
 console.log('╚══════════════════════════════════════════╝\n');
 
 let totalPassed = 0;

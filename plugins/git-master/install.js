@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Git Flow Master - Installation Script
+ * Aureus - Installation Script
  * Installs dependencies for MCP server and web interface
  */
 
@@ -13,7 +13,7 @@ const PLUGIN_ROOT = __dirname;
 const MCP_DIR = path.join(PLUGIN_ROOT, 'mcp');
 const WEB_DIR = path.join(PLUGIN_ROOT, 'web');
 
-console.log('📦 Git Flow Master - Installing dependencies...\n');
+console.log('📦 Aureus - Installing dependencies...\n');
 
 /**
  * Run npm install in a directory
@@ -71,8 +71,8 @@ async function main() {
     // Install web interface dependencies
     await npmInstall(WEB_DIR, 'Web Interface');
 
-    console.log('✓ Git Flow Master installation complete!');
-    console.log('\nYou can now use Git Flow Master with Claude Code.');
+    console.log('✓ Aureus installation complete!');
+    console.log('\nYou can now use Aureus with Claude Code.');
     console.log('\nAvailable commands:');
     console.log('  /versioned-commit  - Create a versioned commit');
     console.log('  /amend-commit     - Amend the last commit');

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Git Flow Master - Server Tests
+ * Aureus - Server Tests
  * Tests the web server functionality
  */
 

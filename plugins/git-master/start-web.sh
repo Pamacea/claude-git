@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# Git Flow Master - Web Interface Launcher
+# Aureus - Web Interface Launcher
 
-echo "🚀 Starting Git Flow Master Web Interface..."
+echo "🚀 Starting Aureus Web Interface..."
 
 # Check if Node.js is installed
 if ! command -v node &> /dev/null; then
@@ -23,7 +23,7 @@ fi
 # Start server
 echo ""
 echo "╔════════════════════════════════════════════════════════════╗"
-echo "║  🚀 Git Flow Master - Web Interface                       ║"
+echo "║  🚀 Aureus - Web Interface                       ║"
 echo "║                                                            ║"
 echo "║  Opening browser at http://localhost:3747                  ║"
 echo "║                                                            ║"

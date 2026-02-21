@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Git Flow Master - Background Server Starter (v0.6.7)
+ * Aureus - Background Server Starter (v0.6.7)
  * Starts the web server in the background with async operations
  */
 
@@ -58,7 +58,7 @@ async function installDependencies() {
   const pluginRoot = getPluginRoot();
   const installScript = path.join(pluginRoot, 'hooks', 'install-dependencies.js');
 
-  console.log('📦 Installing Git Flow Master dependencies...');
+  console.log('📦 Installing Aureus dependencies...');
 
   return new Promise((resolve, reject) => {
     const proc = spawn('node', [installScript], {
@@ -142,7 +142,7 @@ async function startServer() {
 
     // Check if already running
     if (await isServerRunning()) {
-      console.log('✓ Git Flow Master server already running at http://localhost:3747');
+      console.log('✓ Aureus server already running at http://localhost:3747');
       return;
     }
 
@@ -162,6 +162,11 @@ async function startServer() {
     const webDir = getServerDir();
     const serverPath = path.join(webDir, 'server.js');
 
+    // Debug logs for troubleshooting
+    console.log('[DEBUG] webDir:', webDir);
+    console.log('[DEBUG] serverPath:', serverPath);
+    console.log('[DEBUG] File exists:', fsSync.existsSync(serverPath));
+
     // Use synchronous file descriptors for spawn
     const out = fsSync.openSync(LOG_FILE, 'a');
     const err = fsSync.openSync(LOG_FILE, 'a');
@@ -177,7 +182,7 @@ async function startServer() {
     await fs.writeFile(PID_FILE, server.pid.toString());
 
     server.unref();
-    console.log(`✓ Git Flow Master server started at http://localhost:3747 (PID: ${server.pid})`);
+    console.log(`✓ Aureus server started at http://localhost:3747 (PID: ${server.pid})`);
   } catch (error) {
     console.error('✗ Failed to start server:', error.message);
     process.exit(1);
@@ -191,7 +196,7 @@ async function stopServer() {
   try {
     const pidExists = await fileExists(PID_FILE);
     if (!pidExists) {
-      console.log('✓ Git Flow Master server is not running');
+      console.log('✓ Aureus server is not running');
       return;
     }
 
@@ -209,11 +214,11 @@ async function stopServer() {
 
       // Clean up PID file
       await fs.unlink(PID_FILE);
-      console.log('✓ Git Flow Master server stopped');
+      console.log('✓ Aureus server stopped');
     } catch (error) {
       // Process might already be dead, clean up PID file
       await fs.unlink(PID_FILE).catch(() => {});
-      console.log('✓ Git Flow Master server stopped (was already dead)');
+      console.log('✓ Aureus server stopped (was already dead)');
     }
   } catch (error) {
     console.error('✗ Failed to stop server:', error.message);

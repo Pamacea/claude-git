@@ -1,4 +1,4 @@
-# Git Flow Master
+# Aureus
 
 > **Version:** 0.5.0
 > **Advanced Git automation with Versioned Release Convention, smart releases, and conflict resolution**
@@ -99,21 +99,21 @@ TYPE: PROJECT NAME - vVERSION
 ### Examples
 
 ```
-RELEASE: Git Flow Master - v2.0.0
+RELEASE: Aureus - v2.0.0
 
 - Breaking: Redesigned commit message format
 - Breaking: Changed hook configuration structure
 - Added: New amend workflow for small fixes
 - Added: PowerShell hooks for Windows support
 
-UPDATE: Git Flow Master - v1.1.0
+UPDATE: Aureus - v1.1.0
 
 - Added: Web interface for repository management
 - Added: Version suggestion API endpoint
 - Improved: Hook installation for Windows
 - Fixed: Configuration loading edge cases
 
-PATCH: Git Flow Master - v1.0.1
+PATCH: Aureus - v1.0.1
 
 - Fixed: Pre-commit hook secret scanning pattern
 - Fixed: Commit message validation edge case

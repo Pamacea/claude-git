@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Git Flow Master - Install Hooks Script
+ * Aureus - Install Hooks Script
  * Installs Git hooks for a repository (cross-platform)
  */
 
@@ -32,7 +32,7 @@ async function installHooks(repoPath) {
       if (await fileExists(source)) {
         // Create wrapper script that calls PowerShell
         const wrapper = `#!/bin/sh
-# Git Flow Master - ${hook} hook (Windows)
+# Aureus - ${hook} hook (Windows)
 exec powershell.exe -NoProfile -ExecutionPolicy Bypass -File "${source}" $@
 `;
         await fs.writeFile(target, wrapper, { mode: 0o755 });

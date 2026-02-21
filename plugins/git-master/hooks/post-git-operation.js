@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Git Flow Master - Post Git Operation Hook (Node.js Wrapper)
+ * Aureus - Post Git Operation Hook (Node.js Wrapper)
  * Cross-platform wrapper that detects OS and calls appropriate script
  */
 

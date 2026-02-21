@@ -1,5 +1,5 @@
 /**
- * Git Flow Master - Toast Notification System
+ * Aureus - Toast Notification System
  * Replaces alert() with non-blocking, accessible notifications
  */
 

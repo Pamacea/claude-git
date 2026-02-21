@@ -1,19 +1,19 @@
 {
-  "name": "claude-git",
+  "name": "aureus",
   "owner": {
     "name": "Yanis",
     "email": "yanis@example.com"
   },
   "metadata": {
     "description": "Git automation and workflow tools for Claude Code with Versioned Release Convention",
-    "version": "0.5.0"
+    "version": "0.8.1"
   },
   "plugins": [
     {
       "name": "git-master",
       "source": "./plugins/git-master",
       "description": "Advanced Git automation with Versioned Release Convention (RELEASE/UPDATE/PATCH), smart releases, amend workflow, and conflict resolution",
-      "version": "0.6.3",
+      "version": "0.8.1",
       "author": {
         "name": "Yanis"
       },

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Git Flow Master - Dependencies Installation Test
+ * Aureus - Dependencies Installation Test
  * Tests that npm dependencies are correctly installed
  */
 

@@ -1,6 +1,6 @@
 /**
  * State Storage (CommonJS)
- * Load and save Git Flow Master state (tracked repos, hooks, etc.)
+ * Load and save Aureus state (tracked repos, hooks, etc.)
  */
 
 const fs = require('fs').promises;

@@ -1,6 +1,6 @@
-# Git Flow Master - Scripts
+# Aureus - Scripts
 
-This directory contains utility scripts for Git Flow Master.
+This directory contains utility scripts for Aureus.
 
 ## Available Scripts
 

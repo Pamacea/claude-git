@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Git Flow Master - Post-Install Script
+ * Aureus - Post-Install Script
  * Runs after plugin installation
  */
 
@@ -16,7 +16,7 @@ const STATE_FILE = path.join(DATA_DIR, 'state.json');
 
 console.log('');
 console.log('╔════════════════════════════════════════════════════════════╗');
-console.log('║  🚀 Git Flow Master - Installation                        ║');
+console.log('║  🚀 Aureus - Installation                        ║');
 console.log('╚════════════════════════════════════════════════════════════╝');
 console.log('');
 

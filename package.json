@@ -1,6 +1,6 @@
 {
   "name": "aureus",
-  "version": "0.8.0",
+  "version": "0.8.2",
   "description": "Aureus - Intelligent Git automation with Versioned Release Convention for Claude Code",
   "license": "MIT",
   "type": "module",

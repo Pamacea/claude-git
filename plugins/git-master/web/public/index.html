@@ -3,9 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Git Flow Master v0.7.1</title>
+  <title>Aureus v0.8.1</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
   <link rel="stylesheet" href="styles.css">
+
+  <!-- Alpine.js -->
+  <script defer src="https://cdn.unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 <body>
   <div class="full-height-flex-layout">
@@ -14,19 +17,18 @@
       <!-- Header -->
       <div class="header">
         <h1>
-          <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>" alt="Git Flow Master" class="logomark">
-          <span class="logo-text">Git Flow Master</span>
+          <img src="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>" alt="Aureus" class="logomark">
+          <span class="logo-text">Aureus</span>
           <div class="queue-bubble" id="queueBubble" style="display: none;">0</div>
         </h1>
 
         <div class="header-controls">
-          <!-- Status -->
-          <div class="status">
-            <div class="status-dot" id="statusDot"></div>
-            <select id="projectSelect" aria-label="Select project">
-              <option value="all">All Repositories</option>
-            </select>
-          </div>
+          <!-- GitHub Button -->
+          <a href="https://github.com/yanisgit/aureus" target="_blank" rel="noopener noreferrer" class="github-btn" aria-label="View on GitHub">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
+            </svg>
+          </a>
 
           <!-- Settings Button -->
           <button class="settings-btn" id="settingsBtn" aria-label="Settings">
@@ -50,62 +52,73 @@
       </div>
 
       <!-- Feed -->
-      <div class="feed">
+      <div class="feed" x-data="gitFlowApp()">
         <div class="feed-content">
 
-          <!-- Quick Stats -->
-          <div class="stats-grid">
-            <div class="stat-card">
-              <div class="stat-value" id="repoCount">0</div>
-              <div class="stat-label">Repositories</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-value" id="hooksCount">0</div>
-              <div class="stat-label">Hooks Installed</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-value" id="commitsCount">0</div>
-              <div class="stat-label">Recent Commits</div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-value" id="uptimeValue">0m</div>
-              <div class="stat-label">Server Uptime</div>
-            </div>
-          </div>
-
-          <!-- Quick Actions -->
-          <div class="card">
-            <div class="card-header">
-              <div class="card-header-left">
-                <span class="card-type">ACTIONS</span>
+          <!-- Modern Stats Header (Inline Design) -->
+          <header class="stats-header">
+            <div class="stats-inline">
+              <div class="stat-item">
+                <span class="stat-icon" aria-hidden="true">📁</span>
+                <div class="stat-info">
+                  <span class="stat-value" id="repoCount">-</span>
+                  <span class="stat-label">Repos</span>
+                </div>
               </div>
-            </div>
-            <div class="card-content">
-              <div class="action-buttons">
-                <button class="btn btn-primary" onclick="scanAllRepos()" aria-label="Scan all repositories">
-                  <span aria-hidden="true">🔄 Scan All Repositories</span>
-                </button>
-                <button class="btn btn-success" onclick="loadCurrentRepo()" aria-label="Load current repository">
-                  <span aria-hidden="true">📂 Load Current Repo</span>
-                </button>
-                <button class="btn btn-secondary" onclick="refreshState()" aria-label="Refresh application state">
-                  <span aria-hidden="true">🔃 Refresh State</span>
-                </button>
+              <div class="stat-divider"></div>
+              <div class="stat-item">
+                <span class="stat-icon" aria-hidden="true">🪝</span>
+                <div class="stat-info">
+                  <span class="stat-value" id="hooksCount">-</span>
+                  <span class="stat-label">Hooks</span>
+                </div>
               </div>
-            </div>
-          </div>
-
-          <!-- Repositories List -->
-          <div id="reposContainer">
-            <!-- Repo cards will be injected here -->
-            <div class="card">
-              <div class="card-content">
-                <div class="loading-state">
-                  <div class="spinner"></div>
-                  <p style="margin-top: 16px;">Loading repositories...</p>
+              <div class="stat-divider"></div>
+              <div class="stat-item">
+                <span class="stat-icon" aria-hidden="true">⏱️</span>
+                <div class="stat-info">
+                  <span class="stat-value" id="uptimeValue">-</span>
+                  <span class="stat-label">Uptime</span>
                 </div>
               </div>
             </div>
+            <div class="status-badge" id="statusBadge">
+              <span class="status-dot"></span>
+              <span class="status-text">Checking...</span>
+            </div>
+          </header>
+
+          <!-- Modern Action Toolbar -->
+          <div class="action-toolbar">
+            <button class="action-btn action-btn-primary" :class="{ 'loading': isScanning }" :disabled="isScanning" @click="scanAllRepos()">
+              <svg class="action-icon" viewBox="0 0 24 24" x-show="!isScanning" x-cloak><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46A7.93 7.93 0 0 0 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L9.7 20.5c1.26.66 2.7 1 4.3 1z"/></svg>
+              <svg class="action-icon spin" viewBox="0 0 24 24" x-show="isScanning" style="display: none;" x-cloak><path d="M12 4V2A10 10 0 0 0 2 12h2a8 8 0 0 1 8-8z"/></svg>
+              <span x-text="isScanning ? 'Scanning...' : 'Scan Repositories'"></span>
+            </button>
+            <button class="action-btn action-btn-secondary" :class="{ 'loading': isLoading }" :disabled="isLoading" @click="loadCurrentRepo()">
+              <svg class="action-icon" viewBox="0 0 24 24" x-show="!isLoading" x-cloak><path d="M20 6h-8l-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z"/></svg>
+              <svg class="action-icon spin" viewBox="0 0 24 24" x-show="isLoading" style="display: none;" x-cloak><path d="M12 4V2A10 10 0 0 0 2 12h2a8 8 0 0 1 8-8z"/></svg>
+              <span x-text="isLoading ? 'Loading...' : 'Load Current'"></span>
+            </button>
+            <div class="action-spacer"></div>
+            <button class="action-btn action-btn-ghost" @click="loadState()" title="Refresh">
+              <svg class="action-icon" viewBox="0 0 24 24"><path d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+            </button>
+          </div>
+
+          <!-- Empty State -->
+          <div id="emptyState" class="empty-state">
+            <div class="empty-icon">📂</div>
+            <h3>No repositories loaded</h3>
+            <p>Scan your projects to get started</p>
+            <button class="btn btn-primary" :disabled="isScanning" @click="scanAllRepos()">
+              <span x-text="isScanning ? 'Scanning...' : 'Start Scan'"></span>
+            </button>
+          </div>
+
+          <!-- Repositories List (hidden by default) -->
+          <div id="reposContainer" style="display: none;">
+            <!-- Repo cards will be injected here -->
           </div>
 
         </div>
@@ -168,8 +181,8 @@
     </div>
   </div>
 
-  <script src="app.js"></script>
-  <script src="toast.js"></script>
-  <script src="app-v070.js"></script>
+  <script src="app.js?v=0.8.3-fix"></script>
+  <script src="toast.js?v=0.8.3-fix"></script>
+  <script src="app-v070.js?v=0.8.3-fix"></script>
 </body>
 </html>

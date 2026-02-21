@@ -1,4 +1,4 @@
-# Git Flow Master - Commit Message Hook (SECURED) for Windows PowerShell
+# Aureus - Commit Message Hook (SECURED) for Windows PowerShell
 # Validates commit messages against Versioned Release Convention
 #
 # Format: TYPE: PROJECT NAME - vVERSION
@@ -181,9 +181,9 @@ if ($Subject -notmatch $Pattern) {
     Write-ColorOutput "  PATCH: My Project - v1.0.1"
     Write-ColorOutput ""
     Write-ColorOutput "Examples:" $Colors.Blue
-    Write-ColorOutput "  RELEASE: Git Flow Master - v2.0.0"
-    Write-ColorOutput "  UPDATE: Git Flow Master - v1.1.0"
-    Write-ColorOutput "  PATCH: Git Flow Master - v1.0.1"
+    Write-ColorOutput "  RELEASE: Aureus - v2.0.0"
+    Write-ColorOutput "  UPDATE: Aureus - v1.1.0"
+    Write-ColorOutput "  PATCH: Aureus - v1.0.1"
     Write-ColorOutput ""
     Write-ColorOutput "After the title, add your changes in the body:" $Colors.Yellow
     Write-ColorOutput "  PATCH: My Project - v1.0.1"

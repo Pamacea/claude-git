@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Git Flow Master</title>
+  <title>Aureus</title>
   <style>
     :root {
       --primary: #6366f1;
@@ -511,7 +511,7 @@
     <div class="header">
       <div class="header-left">
         <div class="logo">⚡</div>
-        <h1>Git Flow Master</h1>
+        <h1>Aureus</h1>
       </div>
       <div id="status" class="status-badge offline">
         <div class="status-dot"></div>
@@ -1069,7 +1069,7 @@
 
       // Initialize
       clearLog();
-      log('Git Flow Master Ready - Press Ctrl+R to refresh');
+      log('Aureus Ready - Press Ctrl+R to refresh');
       log('Auto-scanning for repositories...');
       scanRepos();
 

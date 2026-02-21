@@ -1,6 +1,6 @@
-# Git Flow Master - Test Suite
+# Aureus - Test Suite
 
-Complete test suite for Git Flow Master plugin.
+Complete test suite for Aureus plugin.
 
 ## Running Tests
 

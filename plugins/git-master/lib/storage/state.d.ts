@@ -1,6 +1,6 @@
 /**
  * State Storage
- * Load and save Git Flow Master state (tracked repos, hooks, etc.)
+ * Load and save Aureus state (tracked repos, hooks, etc.)
  */
 export interface RepositoryInfo {
     name: string;

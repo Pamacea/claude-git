@@ -1,9 +1,9 @@
 @echo off
-REM Git Flow Master - Web Interface Launcher (Windows)
+REM Aureus - Web Interface Launcher (Windows)
 
 echo.
 echo ========================================
-echo   Git Flow Master - Web Interface
+echo   Aureus - Web Interface
 echo ========================================
 echo.
 

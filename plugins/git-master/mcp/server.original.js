@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Git Flow Master - MCP Server (SECURED)
+ * Aureus - MCP Server (SECURED)
  * Model Context Protocol server for Claude Code integration
  *
  * Security fixes applied:
@@ -254,7 +254,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       // Config Tools
       {
         name: 'git_get_config',
-        description: 'Get Git Flow Master configuration',
+        description: 'Get Aureus configuration',
         inputSchema: {
           type: 'object',
           properties: {}
@@ -262,7 +262,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       },
       {
         name: 'git_update_config',
-        description: 'Update Git Flow Master configuration',
+        description: 'Update Aureus configuration',
         inputSchema: {
           type: 'object',
           properties: {
@@ -985,7 +985,7 @@ server.setRequestHandler(ListResourcesRequestSchema, async () => {
     resources: [
       {
         uri: 'git-flow://config',
-        name: 'Git Flow Master Configuration',
+        name: 'Aureus Configuration',
         mimeType: 'application/json',
         description: 'Current configuration for Versioned Release Convention (RELEASE/UPDATE/PATCH)'
       },
@@ -1039,7 +1039,7 @@ server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
 async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  console.error('Git Flow Master MCP Server running (secured)');
+  console.error('Aureus MCP Server running (secured)');
 }
 
 main().catch(console.error);

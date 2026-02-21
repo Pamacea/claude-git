@@ -4,7 +4,7 @@
 # Verifies that hooks only process git commands
 
 echo "================================"
-echo "Git Flow Master - Hook Tests"
+echo "Aureus - Hook Tests"
 echo "================================"
 echo ""
 

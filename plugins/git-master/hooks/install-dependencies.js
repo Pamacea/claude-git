@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Git Flow Master - Install Dependencies
+ * Aureus - Install Dependencies
  * Ensures npm dependencies are installed for both web server and MCP server
  */
 

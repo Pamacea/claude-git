@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.8.1] - 2026-02-21
+
+### 🐛 Bug Fixes
+
+#### Critical
+- **Fixed:** Missing `fs` and `os` imports in `web/server.js` causing startup failures
+  - Lines 254 and 326 used modules without importing them
+  - Web server crashed on session start
+  - Now all imports properly declared
+
+#### Dependencies
+- **Verified:** npm dependencies installation working correctly
+  - `express` and `helmet` installed in `plugins/git-master/web/`
+  - `@modelcontextprotocol/sdk` installed in `plugins/git-master/mcp/`
+  - MCP server bundle rebuilt and verified
+
+#### Verified Functionality
+- ✅ Web server starts on http://localhost:3747
+- ✅ All API endpoints responding correctly
+- ✅ MCP server returns all 19 tools via stdio
+- ✅ SessionStart hooks execute without errors
+- ✅ `start-background.js` start/stop commands working
+
+---
+
 ## [0.8.0] - 2026-02-21
 
 ### 🏛️ Project Renaming

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Git Flow Master - Post Git Operation Hook
+# Aureus - Post Git Operation Hook
 # Runs after Bash commands to handle git-related cleanup
 # Only processes git commands to avoid latency on other commands
 

@@ -1,5 +1,5 @@
 /**
- * Git Flow Master - Shared Utilities Library
+ * Aureus - Shared Utilities Library
  * Barrel export for all modules
  */
 

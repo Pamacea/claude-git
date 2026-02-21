@@ -1,5 +1,5 @@
 /**
- * Git Flow Master - Shared Utilities Library (CommonJS)
+ * Aureus - Shared Utilities Library (CommonJS)
  * Barrel export for all modules - for use in .js files
  */
 

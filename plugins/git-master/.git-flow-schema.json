@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Git Flow Master Configuration Schema",
+  "title": "Aureus Configuration Schema",
   "type": "object",
   "properties": {
     "commit": {

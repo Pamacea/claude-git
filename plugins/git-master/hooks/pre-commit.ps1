@@ -1,4 +1,4 @@
-# Git Flow Master - Pre-Commit Hook (SECURED) for Windows PowerShell
+# Aureus - Pre-Commit Hook (SECURED) for Windows PowerShell
 # Validates code quality before commit
 #
 # Security Features:

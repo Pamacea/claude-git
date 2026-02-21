@@ -3018,7 +3018,7 @@ var require_compile = __commonJS({
       const schOrFunc = root.refs[ref];
       if (schOrFunc)
         return schOrFunc;
-      let _sch = resolve.call(this, root, ref);
+      let _sch = resolve2.call(this, root, ref);
       if (_sch === void 0) {
         const schema = (_a2 = root.localRefs) === null || _a2 === void 0 ? void 0 : _a2[ref];
         const { schemaId } = this.opts;
@@ -3045,7 +3045,7 @@ var require_compile = __commonJS({
     function sameSchemaEnv(s1, s2) {
       return s1.schema === s2.schema && s1.root === s2.root && s1.baseId === s2.baseId;
     }
-    function resolve(root, ref) {
+    function resolve2(root, ref) {
       let sch;
       while (typeof (sch = this.refs[ref]) == "string")
         ref = sch;
@@ -3261,8 +3261,8 @@ var require_utils = __commonJS({
       }
       return ind;
     }
-    function removeDotSegments(path2) {
-      let input = path2;
+    function removeDotSegments(path5) {
+      let input = path5;
       const output = [];
       let nextSlash = -1;
       let len = 0;
@@ -3462,8 +3462,8 @@ var require_schemes = __commonJS({
         wsComponent.secure = void 0;
       }
       if (wsComponent.resourceName) {
-        const [path2, query] = wsComponent.resourceName.split("?");
-        wsComponent.path = path2 && path2 !== "/" ? path2 : void 0;
+        const [path5, query] = wsComponent.resourceName.split("?");
+        wsComponent.path = path5 && path5 !== "/" ? path5 : void 0;
         wsComponent.query = query;
         wsComponent.resourceName = void 0;
       }
@@ -3623,55 +3623,55 @@ var require_fast_uri = __commonJS({
       }
       return uri;
     }
-    function resolve(baseURI, relativeURI, options) {
+    function resolve2(baseURI, relativeURI, options) {
       const schemelessOptions = options ? Object.assign({ scheme: "null" }, options) : { scheme: "null" };
       const resolved = resolveComponent(parse3(baseURI, schemelessOptions), parse3(relativeURI, schemelessOptions), schemelessOptions, true);
       schemelessOptions.skipEscape = true;
       return serialize(resolved, schemelessOptions);
     }
-    function resolveComponent(base, relative, options, skipNormalization) {
+    function resolveComponent(base, relative2, options, skipNormalization) {
       const target = {};
       if (!skipNormalization) {
         base = parse3(serialize(base, options), options);
-        relative = parse3(serialize(relative, options), options);
+        relative2 = parse3(serialize(relative2, options), options);
       }
       options = options || {};
-      if (!options.tolerant && relative.scheme) {
-        target.scheme = relative.scheme;
-        target.userinfo = relative.userinfo;
-        target.host = relative.host;
-        target.port = relative.port;
-        target.path = removeDotSegments(relative.path || "");
-        target.query = relative.query;
+      if (!options.tolerant && relative2.scheme) {
+        target.scheme = relative2.scheme;
+        target.userinfo = relative2.userinfo;
+        target.host = relative2.host;
+        target.port = relative2.port;
+        target.path = removeDotSegments(relative2.path || "");
+        target.query = relative2.query;
       } else {
-        if (relative.userinfo !== void 0 || relative.host !== void 0 || relative.port !== void 0) {
-          target.userinfo = relative.userinfo;
-          target.host = relative.host;
-          target.port = relative.port;
-          target.path = removeDotSegments(relative.path || "");
-          target.query = relative.query;
+        if (relative2.userinfo !== void 0 || relative2.host !== void 0 || relative2.port !== void 0) {
+          target.userinfo = relative2.userinfo;
+          target.host = relative2.host;
+          target.port = relative2.port;
+          target.path = removeDotSegments(relative2.path || "");
+          target.query = relative2.query;
         } else {
-          if (!relative.path) {
+          if (!relative2.path) {
             target.path = base.path;
-            if (relative.query !== void 0) {
-              target.query = relative.query;
+            if (relative2.query !== void 0) {
+              target.query = relative2.query;
             } else {
               target.query = base.query;
             }
           } else {
-            if (relative.path[0] === "/") {
-              target.path = removeDotSegments(relative.path);
+            if (relative2.path[0] === "/") {
+              target.path = removeDotSegments(relative2.path);
             } else {
               if ((base.userinfo !== void 0 || base.host !== void 0 || base.port !== void 0) && !base.path) {
-                target.path = "/" + relative.path;
+                target.path = "/" + relative2.path;
               } else if (!base.path) {
-                target.path = relative.path;
+                target.path = relative2.path;
               } else {
-                target.path = base.path.slice(0, base.path.lastIndexOf("/") + 1) + relative.path;
+                target.path = base.path.slice(0, base.path.lastIndexOf("/") + 1) + relative2.path;
               }
               target.path = removeDotSegments(target.path);
             }
-            target.query = relative.query;
+            target.query = relative2.query;
           }
           target.userinfo = base.userinfo;
           target.host = base.host;
@@ -3679,7 +3679,7 @@ var require_fast_uri = __commonJS({
         }
         target.scheme = base.scheme;
       }
-      target.fragment = relative.fragment;
+      target.fragment = relative2.fragment;
       return target;
     }
     function equal(uriA, uriB, options) {
@@ -3850,7 +3850,7 @@ var require_fast_uri = __commonJS({
     var fastUri = {
       SCHEMES,
       normalize,
-      resolve,
+      resolve: resolve2,
       resolveComponent,
       equal,
       serialize,
@@ -6871,12 +6871,12 @@ var require_dist = __commonJS({
         throw new Error(`Unknown format "${name}"`);
       return f;
     };
-    function addFormats(ajv, list, fs2, exportName) {
+    function addFormats(ajv, list, fs6, exportName) {
       var _a2;
       var _b;
       (_a2 = (_b = ajv.opts.code).formats) !== null && _a2 !== void 0 ? _a2 : _b.formats = (0, codegen_1._)`require("ajv-formats/dist/formats").${exportName}`;
       for (const f of list)
-        ajv.addFormat(f, fs2[f]);
+        ajv.addFormat(f, fs6[f]);
     }
     module.exports = exports = formatsPlugin;
     Object.defineProperty(exports, "__esModule", { value: true });
@@ -7272,8 +7272,8 @@ function getErrorMap() {
 // node_modules/zod/v3/helpers/parseUtil.js
 init_esm_shim();
 var makeIssue = (params) => {
-  const { data, path: path2, errorMaps, issueData } = params;
-  const fullPath = [...path2, ...issueData.path || []];
+  const { data, path: path5, errorMaps, issueData } = params;
+  const fullPath = [...path5, ...issueData.path || []];
   const fullIssue = {
     ...issueData,
     path: fullPath
@@ -7395,11 +7395,11 @@ var errorUtil;
 
 // node_modules/zod/v3/types.js
 var ParseInputLazyPath = class {
-  constructor(parent, value, path2, key) {
+  constructor(parent, value, path5, key) {
     this._cachedPath = [];
     this.parent = parent;
     this.data = value;
-    this._path = path2;
+    this._path = path5;
     this._key = key;
   }
   get path() {
@@ -11062,10 +11062,10 @@ function mergeDefs(...defs) {
 function cloneDef(schema) {
   return mergeDefs(schema._zod.def);
 }
-function getElementAtPath(obj, path2) {
-  if (!path2)
+function getElementAtPath(obj, path5) {
+  if (!path5)
     return obj;
-  return path2.reduce((acc, key) => acc?.[key], obj);
+  return path5.reduce((acc, key) => acc?.[key], obj);
 }
 function promiseAllObject(promisesObj) {
   const keys = Object.keys(promisesObj);
@@ -11448,11 +11448,11 @@ function aborted(x, startIndex = 0) {
   }
   return false;
 }
-function prefixIssues(path2, issues) {
+function prefixIssues(path5, issues) {
   return issues.map((iss) => {
     var _a2;
     (_a2 = iss).path ?? (_a2.path = []);
-    iss.path.unshift(path2);
+    iss.path.unshift(path5);
     return iss;
   });
 }
@@ -20034,7 +20034,7 @@ var Protocol = class {
           return;
         }
         const pollInterval = task2.pollInterval ?? this._options?.defaultTaskPollInterval ?? 1e3;
-        await new Promise((resolve) => setTimeout(resolve, pollInterval));
+        await new Promise((resolve2) => setTimeout(resolve2, pollInterval));
         options?.signal?.throwIfAborted();
       }
     } catch (error2) {
@@ -20051,7 +20051,7 @@ var Protocol = class {
    */
   request(request, resultSchema, options) {
     const { relatedRequestId, resumptionToken, onresumptiontoken, task, relatedTask } = options ?? {};
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve2, reject) => {
       const earlyReject = (error2) => {
         reject(error2);
       };
@@ -20129,7 +20129,7 @@ var Protocol = class {
           if (!parseResult.success) {
             reject(parseResult.error);
           } else {
-            resolve(parseResult.data);
+            resolve2(parseResult.data);
           }
         } catch (error2) {
           reject(error2);
@@ -20390,12 +20390,12 @@ var Protocol = class {
       }
     } catch {
     }
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve2, reject) => {
       if (signal.aborted) {
         reject(new McpError(ErrorCode.InvalidRequest, "Request cancelled"));
         return;
       }
-      const timeoutId = setTimeout(resolve, interval);
+      const timeoutId = setTimeout(resolve2, interval);
       signal.addEventListener("abort", () => {
         clearTimeout(timeoutId);
         reject(new McpError(ErrorCode.InvalidRequest, "Request cancelled"));
@@ -21129,59 +21129,63 @@ var StdioServerTransport = class {
     this.onclose?.();
   }
   send(message) {
-    return new Promise((resolve) => {
+    return new Promise((resolve2) => {
       const json2 = serializeMessage(message);
       if (this._stdout.write(json2)) {
-        resolve();
+        resolve2();
       } else {
-        this._stdout.once("drain", resolve);
+        this._stdout.once("drain", resolve2);
       }
     });
   }
 };
 
 // server.original.js
-import { spawn } from "child_process";
-import { promises as fs } from "fs";
-import path from "path";
-import os from "os";
-import { fileURLToPath as fileURLToPath2 } from "url";
 import crypto from "crypto";
-var __filename2 = fileURLToPath2(import.meta.url);
-var __dirname2 = path.dirname(__filename2);
-var DATA_DIR = path.join(os.homedir(), ".git-flow-master");
-var CONFIG_FILE = path.join(DATA_DIR, "config.json");
-var STATE_FILE = path.join(DATA_DIR, "state.json");
-var ALLOWED_BASE_PATHS = [
-  os.homedir(),
-  process.cwd(),
-  path.join(os.homedir(), "Projects"),
-  path.join(os.homedir(), "workspace"),
-  path.join(os.homedir(), "dev"),
-  path.join(os.homedir(), "code")
-].filter((p) => p);
-var rateLimitMap = /* @__PURE__ */ new Map();
-var RATE_LIMIT_WINDOW = 6e4;
-var RATE_LIMIT_MAX = 100;
-function execSecure(command, args, options = {}) {
-  return new Promise((resolve, reject) => {
+import { fileURLToPath as fileURLToPath2 } from "url";
+import path4 from "path";
+
+// ../lib/index.ts
+init_esm_shim();
+
+// ../lib/git/executor.js
+init_esm_shim();
+import { spawn } from "child_process";
+import { promises as fs2 } from "fs";
+async function execSecure(command, args, options = {}) {
+  if (!Array.isArray(args)) {
+    throw new Error("Arguments must be an array");
+  }
+  for (const arg of args) {
+    if (typeof arg !== "string") {
+      throw new Error("Invalid argument type: all arguments must be strings");
+    }
+  }
+  return new Promise((resolve2, reject) => {
     const proc = spawn(command, args, {
       cwd: options.cwd,
-      encoding: "utf-8",
-      timeout: options.timeout || 3e4,
-      // 30s timeout
-      maxBuffer: 1024 * 1024
-      // 1MB max
+      shell: false,
+      // Critical: no shell to prevent injection
+      windowsHide: true,
+      timeout: options.timeout || 3e4
     });
     let stdout = "";
     let stderr = "";
-    proc.stdout.on("data", (data) => stdout += data);
-    proc.stderr.on("data", (data) => stderr += data);
+    if (proc.stdout) {
+      proc.stdout.on("data", (data) => {
+        stdout += data.toString();
+      });
+    }
+    if (proc.stderr) {
+      proc.stderr.on("data", (data) => {
+        stderr += data.toString();
+      });
+    }
     proc.on("close", (code) => {
       if (code === 0) {
-        resolve(stdout.trim());
+        resolve2(stdout.trim());
       } else {
-        reject(new Error(`Command failed with code ${code}: ${stderr.slice(0, 200)}`));
+        reject(new Error(`${command} failed with exit code ${code}: ${stderr.slice(0, 200)}`));
       }
     });
     proc.on("error", (err) => {
@@ -21189,6 +21193,36 @@ function execSecure(command, args, options = {}) {
     });
   });
 }
+async function fileExists(filePath) {
+  try {
+    await fs2.access(filePath);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+// ../lib/git/validation.js
+init_esm_shim();
+import { promises as fs3 } from "fs";
+import * as os from "os";
+import * as path from "path";
+var ALLOWED_BASE_PATHS = [
+  os.homedir(),
+  process.cwd(),
+  path.join(os.homedir(), "Projects"),
+  path.join(os.homedir(), "projects"),
+  path.join(os.homedir(), "workspace"),
+  path.join(os.homedir(), "Workspace"),
+  path.join(os.homedir(), "git"),
+  path.join(os.homedir(), "GitHub"),
+  "C:\\Users",
+  "D:\\Projects",
+  "/home",
+  "/Users",
+  "/workspace",
+  "/projects"
+].filter(Boolean);
 async function validateRepoPath(repoPath) {
   if (!repoPath || typeof repoPath !== "string") {
     throw new Error("Repository path is required and must be a string");
@@ -21199,14 +21233,18 @@ async function validateRepoPath(repoPath) {
   }
   const isAllowed = ALLOWED_BASE_PATHS.some((allowed) => {
     const normalizedAllowed = path.resolve(allowed);
-    return resolved.startsWith(normalizedAllowed + path.sep) || resolved === normalizedAllowed;
+    const relative2 = path.relative(normalizedAllowed, resolved);
+    return !relative2.startsWith("..");
   });
   if (!isAllowed) {
     throw new Error("Access denied: path outside allowed directories");
   }
+  if (repoPath.includes("..") || repoPath.includes("~")) {
+    throw new Error("Path traversal detected");
+  }
   const gitDir = path.join(resolved, ".git");
   try {
-    const stat = await fs.stat(gitDir);
+    const stat = await fs3.stat(gitDir);
     if (!stat.isDirectory()) {
       throw new Error("Not a git repository");
     }
@@ -21215,28 +21253,13 @@ async function validateRepoPath(repoPath) {
   }
   return resolved;
 }
-function validateVersion(version2) {
-  if (!version2 || typeof version2 !== "string") {
-    return false;
-  }
-  const semverPattern = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/;
-  return semverPattern.test(version2);
-}
-function sanitizeCommitMessage(message) {
-  if (!message || typeof message !== "string") {
-    throw new Error("Commit message must be a non-empty string");
-  }
-  let sanitized = message.replace(/[\x00-\x09\x0B-\x1F\x7F]/g, "");
-  if (sanitized.length > 5e3) {
-    throw new Error("Commit message too long (max 5000 characters)");
-  }
-  return sanitized;
-}
 function sanitizeFilePath(filePath) {
   if (!filePath || typeof filePath !== "string") {
     throw new Error("File path must be a non-empty string");
   }
   let sanitized = filePath.replace(/\0/g, "");
+  const dangerousChars = /[;&|<>$`]/g;
+  sanitized = sanitized.replace(dangerousChars, "");
   if (path.isAbsolute(sanitized)) {
     const resolved = path.resolve(sanitized);
     if (!resolved.startsWith(process.cwd())) {
@@ -21251,98 +21274,30 @@ function sanitizeFilePath(filePath) {
   }
   return sanitized;
 }
-function checkRateLimit(clientId = "default") {
-  const now = Date.now();
-  const clientData = rateLimitMap.get(clientId) || { count: 0, windowStart: now };
-  if (now - clientData.windowStart > RATE_LIMIT_WINDOW) {
-    clientData.count = 0;
-    clientData.windowStart = now;
+function sanitizeCommitMessage(message) {
+  if (!message || typeof message !== "string") {
+    throw new Error("Commit message must be a non-empty string");
   }
-  if (clientData.count >= RATE_LIMIT_MAX) {
-    throw new Error("Rate limit exceeded. Please try again later.");
+  let sanitized = message.replace(/[\x00-\x08\x0B-\x0C\x0E-\x1F\x7F]/g, "");
+  if (sanitized.length > 5e3) {
+    throw new Error("Commit message too long (max 5000 characters)");
   }
-  clientData.count++;
-  rateLimitMap.set(clientId, clientData);
+  return sanitized.trim();
 }
-function hashForLog(data) {
-  if (!data) return "[null]";
-  return crypto.createHash("sha256").update(String(data)).digest("hex").slice(0, 8);
-}
-async function fileExists(filePath) {
-  try {
-    await fs.access(filePath);
-    return true;
-  } catch {
+function validateVersion(version2) {
+  if (!version2 || typeof version2 !== "string") {
     return false;
   }
+  const semverPattern = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/;
+  return semverPattern.test(version2);
 }
-async function loadConfig() {
-  try {
-    if (await fileExists(CONFIG_FILE)) {
-      const content = await fs.readFile(CONFIG_FILE, "utf-8");
-      return JSON.parse(content);
-    }
-  } catch (error2) {
-    console.error("Failed to load config:", error2.message);
-  }
-  return getDefaultConfig();
-}
-async function saveConfig(config2) {
-  await fs.mkdir(DATA_DIR, { recursive: true });
-  const content = JSON.stringify(config2, null, 2);
-  await fs.writeFile(CONFIG_FILE, content, { mode: 384 });
-}
-async function loadState() {
-  try {
-    if (await fileExists(STATE_FILE)) {
-      const content = await fs.readFile(STATE_FILE, "utf-8");
-      return JSON.parse(content);
-    }
-  } catch (error2) {
-    console.error("Failed to load state:", error2.message);
-  }
-  return { repositories: [], activeHooks: {}, lastSync: null };
-}
-async function saveState(state) {
-  await fs.mkdir(DATA_DIR, { recursive: true });
-  await fs.writeFile(STATE_FILE, JSON.stringify(state, null, 2), { mode: 384 });
-}
-function getDefaultConfig() {
-  return {
-    projectName: "My Project",
-    commit: {
-      convention: "versioned-release",
-      types: {
-        RELEASE: { description: "Major release - Breaking changes, new major version", emoji: "\u{1F680}", semverBump: "MAJOR", format: "RELEASE: {project} - v{version}" },
-        UPDATE: { description: "Minor update - New features, enhancements", emoji: "\u2728", semverBump: "MINOR", format: "UPDATE: {project} - v{version}" },
-        PATCH: { description: "Patch - Bug fixes, small improvements", emoji: "\u{1F527}", semverBump: "PATCH", format: "PATCH: {project} - v{version}" }
-      },
-      rules: {
-        subjectMinLength: 10,
-        subjectMaxLength: 100,
-        bodyLineLength: 100,
-        requireVersion: true,
-        requireProjectName: true,
-        versionPattern: "v\\d+\\.\\d+\\.\\d+",
-        projectNameMaxLength: 50
-      },
-      amend: {
-        enabled: true,
-        maxAmends: 10,
-        requireSameDay: true,
-        autoIncrementPatch: false,
-        keepVersion: true,
-        allowedForTypes: ["PATCH", "UPDATE"]
-      }
-    },
-    hooks: {
-      preCommit: { enabled: true, lint: true, typecheck: true, test: false, secretScan: true },
-      commitMsg: { enabled: true, validate: true, enforceVersionedFormat: true, allowAmend: true }
-    },
-    branch: { mainBranch: "main", developBranch: "develop" }
-  };
-}
+
+// ../lib/convention/parser.js
+init_esm_shim();
 function parseCommitMessage(message) {
+  if (!message) {
+    return { valid: false, error: "Message is required" };
+  }
   const versionedPattern = /^(RELEASE|UPDATE|PATCH):\s*([A-Za-z0-9_ -]+?)\s*-\s*(v[0-9]+\.[0-9]+\.[0-9]+)([\s\S]*)$/;
   const match = message.match(versionedPattern);
   if (match) {
@@ -21369,7 +21324,10 @@ function parseCommitMessage(message) {
       fullMessage: message
     };
   }
-  return { valid: false, error: "Does not match Versioned Release Convention or Conventional Commits format" };
+  return {
+    valid: false,
+    error: "Does not match Versioned Release Convention or Conventional Commits format"
+  };
 }
 function generateCommitMessage(type, project, version2, body, description = null) {
   let message = `${type}: ${project} - ${version2}`;
@@ -21383,14 +21341,21 @@ ${bodyContent}`;
 }
 function parseVersion(version2) {
   const match = version2.match(/v?(\d+)\.(\d+)\.(\d+)/);
-  if (!match) return null;
+  if (!match)
+    return null;
   return {
     major: parseInt(match[1], 10),
     minor: parseInt(match[2], 10),
     patch: parseInt(match[3], 10)
   };
 }
-function bumpVersion(parsed, type) {
+function bumpVersion(version2, type) {
+  let parsed;
+  if (typeof version2 === "string") {
+    parsed = parseVersion(version2) || { major: 0, minor: 0, patch: 0 };
+  } else {
+    parsed = version2;
+  }
   switch (type) {
     case "RELEASE":
       return `v${parsed.major + 1}.0.0`;
@@ -21400,6 +21365,169 @@ function bumpVersion(parsed, type) {
     default:
       return `v${parsed.major}.${parsed.minor}.${parsed.patch + 1}`;
   }
+}
+
+// ../lib/storage/config.js
+init_esm_shim();
+import { promises as fs4 } from "fs";
+import * as os2 from "os";
+import * as path2 from "path";
+var DATA_DIR = path2.join(os2.homedir(), ".git-flow-master");
+var CONFIG_FILE = path2.join(DATA_DIR, "config.json");
+function getDefaultConfig() {
+  return {
+    projectName: "My Project",
+    commit: {
+      convention: "versioned-release",
+      types: {
+        RELEASE: {
+          description: "Major release - Breaking changes, new major version",
+          emoji: "\u{1F680}",
+          semverBump: "MAJOR",
+          format: "RELEASE: {project} - v{version}"
+        },
+        UPDATE: {
+          description: "Minor update - New features, enhancements",
+          emoji: "\u2728",
+          semverBump: "MINOR",
+          format: "UPDATE: {project} - v{version}"
+        },
+        PATCH: {
+          description: "Patch - Bug fixes, small improvements",
+          emoji: "\u{1F527}",
+          semverBump: "PATCH",
+          format: "PATCH: {project} - v{version}"
+        }
+      },
+      rules: {
+        subjectMinLength: 10,
+        subjectMaxLength: 100,
+        bodyLineLength: 100,
+        requireVersion: true,
+        requireProjectName: true,
+        versionPattern: "v\\d+\\.\\d+\\.\\d+",
+        projectNameMaxLength: 50
+      },
+      amend: {
+        enabled: true,
+        maxAmends: 10,
+        requireSameDay: true,
+        autoIncrementPatch: false,
+        keepVersion: true,
+        allowedForTypes: ["PATCH", "UPDATE"]
+      }
+    },
+    hooks: {
+      preCommit: {
+        enabled: true,
+        lint: true,
+        typecheck: true,
+        test: false,
+        secretScan: true
+      },
+      commitMsg: {
+        enabled: true,
+        validate: true,
+        enforceVersionedFormat: true,
+        allowAmend: true
+      }
+    },
+    branch: {
+      mainBranch: "main",
+      developBranch: "develop"
+    }
+  };
+}
+async function loadConfig() {
+  try {
+    await fs4.mkdir(DATA_DIR, { recursive: true });
+    const content = await fs4.readFile(CONFIG_FILE, "utf-8");
+    const config2 = JSON.parse(content);
+    return { ...getDefaultConfig(), ...config2 };
+  } catch (error2) {
+    if (error2.code === "ENOENT") {
+      return getDefaultConfig();
+    }
+    console.error("Failed to load config:", error2.message);
+    return getDefaultConfig();
+  }
+}
+async function saveConfig(config2) {
+  await fs4.mkdir(DATA_DIR, { recursive: true });
+  const existing = await loadConfig();
+  const merged = { ...existing, ...config2 };
+  const content = JSON.stringify(merged, null, 2);
+  await fs4.writeFile(CONFIG_FILE, content, { mode: 384 });
+}
+
+// ../lib/storage/state.js
+init_esm_shim();
+import { promises as fs5 } from "fs";
+import * as os3 from "os";
+import * as path3 from "path";
+var DATA_DIR2 = path3.join(os3.homedir(), ".git-flow-master");
+var STATE_FILE = path3.join(DATA_DIR2, "state.json");
+function getDefaultState() {
+  return {
+    repositories: [],
+    activeHooks: {},
+    lastSync: null
+  };
+}
+async function loadState() {
+  try {
+    await fs5.mkdir(DATA_DIR2, { recursive: true });
+    const content = await fs5.readFile(STATE_FILE, "utf-8");
+    const state = JSON.parse(content);
+    return {
+      repositories: state.repositories || [],
+      activeHooks: state.activeHooks || {},
+      lastSync: state.lastSync || null,
+      config: state.config || {}
+    };
+  } catch (error2) {
+    if (error2.code === "ENOENT") {
+      return getDefaultState();
+    }
+    console.error("Failed to load state:", error2.message);
+    return getDefaultState();
+  }
+}
+async function saveState(state) {
+  await fs5.mkdir(DATA_DIR2, { recursive: true });
+  const existing = await loadState();
+  const merged = {
+    repositories: state.repositories !== void 0 ? state.repositories : existing.repositories,
+    activeHooks: state.activeHooks !== void 0 ? state.activeHooks : existing.activeHooks,
+    lastSync: state.lastSync !== void 0 ? state.lastSync : existing.lastSync,
+    config: state.config !== void 0 ? state.config : existing.config
+  };
+  const content = JSON.stringify(merged, null, 2);
+  await fs5.writeFile(STATE_FILE, content, { mode: 384 });
+}
+
+// server.original.js
+var __filename2 = fileURLToPath2(import.meta.url);
+var __dirname2 = path4.dirname(__filename2);
+var rateLimitMap = /* @__PURE__ */ new Map();
+var RATE_LIMIT_WINDOW = 6e4;
+var RATE_LIMIT_MAX = 100;
+function checkRateLimit(clientId = "default") {
+  const now = Date.now();
+  const clientData = rateLimitMap.get(clientId) || { count: 0, windowStart: now };
+  if (now - clientData.windowStart > RATE_LIMIT_WINDOW) {
+    clientData.count = 0;
+    clientData.windowStart = now;
+  }
+  if (clientData.count >= RATE_LIMIT_MAX) {
+    throw new Error("Rate limit exceeded. Please try again later.");
+  }
+  clientData.count++;
+  rateLimitMap.set(clientId, clientData);
+}
+function hashForLog(data) {
+  if (!data) return "[null]";
+  return crypto.createHash("sha256").update(String(data)).digest("hex").slice(0, 8);
 }
 var server = new Server(
   {
@@ -21569,7 +21697,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       // Config Tools
       {
         name: "git_get_config",
-        description: "Get Git Flow Master configuration",
+        description: "Get Aureus configuration",
         inputSchema: {
           type: "object",
           properties: {}
@@ -21577,7 +21705,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       },
       {
         name: "git_update_config",
-        description: "Update Git Flow Master configuration",
+        description: "Update Aureus configuration",
         inputSchema: {
           type: "object",
           properties: {
@@ -21966,15 +22094,15 @@ Repository: ${hashForLog(validatedPath)}`
       case "git_install_hooks": {
         const { repoPath } = args;
         const validatedPath = await validateRepoPath(repoPath);
-        const hooksDir = path.join(validatedPath, ".git", "hooks");
-        const pluginHooksDir = path.join(__dirname2, "..", "hooks");
+        const hooksDir = path4.join(validatedPath, ".git", "hooks");
+        const pluginHooksDir = path4.join(__dirname2, "..", "hooks");
         await fs.mkdir(hooksDir, { recursive: true });
         const hooks = ["pre-commit", "commit-msg", "post-release"];
         const installed = [];
         for (const hook of hooks) {
-          const source = path.join(pluginHooksDir, `${hook}.sh`);
+          const source = path4.join(pluginHooksDir, `${hook}.sh`);
           if (await fileExists(source)) {
-            const target = path.join(hooksDir, hook);
+            const target = path4.join(hooksDir, hook);
             await fs.copyFile(source, target);
             await fs.chmod(target, 493);
             installed.push(hook);
@@ -21997,10 +22125,10 @@ Repository: ${hashForLog(validatedPath)}`
       case "git_uninstall_hooks": {
         const { repoPath } = args;
         const validatedPath = await validateRepoPath(repoPath);
-        const hooksDir = path.join(validatedPath, ".git", "hooks");
+        const hooksDir = path4.join(validatedPath, ".git", "hooks");
         const hooks = ["pre-commit", "commit-msg", "post-release"];
         for (const hook of hooks) {
-          const target = path.join(hooksDir, hook);
+          const target = path4.join(hooksDir, hook);
           if (await fileExists(target)) {
             await fs.unlink(target);
           }
@@ -22020,7 +22148,7 @@ Repository: ${hashForLog(validatedPath)}`
         const state = await loadState();
         const safeState = {
           repositories: state.repositories.map((r) => ({
-            name: path.basename(r.path || r),
+            name: path4.basename(r.path || r),
             hasHooks: Object.keys(state.activeHooks[r.path] || {}).length > 0
           })),
           lastSync: state.lastSync
@@ -22162,7 +22290,7 @@ server.setRequestHandler(ListResourcesRequestSchema, async () => {
     resources: [
       {
         uri: "git-flow://config",
-        name: "Git Flow Master Configuration",
+        name: "Aureus Configuration",
         mimeType: "application/json",
         description: "Current configuration for Versioned Release Convention (RELEASE/UPDATE/PATCH)"
       },
@@ -22189,7 +22317,7 @@ server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
       };
     }
     case "git-flow://conventions": {
-      const conventionsPath = path.join(__dirname2, "..", "docs", "GIT_CONVENTIONS.md");
+      const conventionsPath = path4.join(__dirname2, "..", "docs", "GIT_CONVENTIONS.md");
       if (await fileExists(conventionsPath)) {
         const content = await fs.readFile(conventionsPath, "utf-8");
         return {
@@ -22209,6 +22337,6 @@ server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
 async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  console.error("Git Flow Master MCP Server running (secured)");
+  console.error("Aureus MCP Server running (secured)");
 }
 main().catch(console.error);

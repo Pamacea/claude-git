@@ -1,8 +1,8 @@
-# Git Flow Master - Web Interface Launcher (PowerShell)
+# Aureus - Web Interface Launcher (PowerShell)
 
 Write-Host ""
 Write-Host "========================================" -ForegroundColor Cyan
-Write-Host "  Git Flow Master - Web Interface" -ForegroundColor Cyan
+Write-Host "  Aureus - Web Interface" -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host ""
 

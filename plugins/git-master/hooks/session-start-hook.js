@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Git Flow Master - Session Start Hook
+ * Aureus - Session Start Hook
  *
  * Automatically starts the web interface if not running,
  * then opens it in the default browser.
@@ -12,6 +12,11 @@
 const http = require('http');
 const { spawn } = require('child_process');
 const path = require('path');
+const { isNodeModulesInstalled, installDependencies } = require('./install-dependencies');
+
+const PLUGIN_ROOT = path.join(__dirname, '..');
+const WEB_DIR = path.join(PLUGIN_ROOT, 'web');
+const MCP_DIR = path.join(PLUGIN_ROOT, 'mcp');
 
 const PORT = 3747;
 const SERVER_URL = `http://localhost:${PORT}`;
@@ -58,7 +63,7 @@ async function waitForServer(maxWait = 10000, interval = 100) {
 async function startServer() {
   const serverPath = path.join(__dirname, '..', 'web', 'server.js');
 
-  console.log('🚀 Starting Git Flow Master web interface...');
+  console.log('🚀 Starting Aureus web interface...');
 
   const proc = spawn('node', [serverPath], {
     stdio: ['ignore', 'pipe', 'pipe'],
@@ -68,11 +73,11 @@ async function startServer() {
 
   // Log server output for debugging
   proc.stdout.on('data', (data) => {
-    console.log(`[Git Flow Master] ${data.toString().trim()}`);
+    console.log(`[Aureus] ${data.toString().trim()}`);
   });
 
   proc.stderr.on('data', (data) => {
-    console.error(`[Git Flow Master Error] ${data.toString().trim()}`);
+    console.error(`[Aureus Error] ${data.toString().trim()}`);
   });
 
   proc.on('error', (err) => {
@@ -85,7 +90,7 @@ async function startServer() {
   // Wait for server to be actually ready (polling)
   try {
     await waitForServer();
-    console.log(`✓ Git Flow Master server started on ${SERVER_URL}`);
+    console.log(`✓ Aureus server started on ${SERVER_URL}`);
   } catch (error) {
     console.error(`✗ Server startup failed: ${error.message}`);
     throw error;
@@ -121,15 +126,47 @@ async function openBrowser() {
 }
 
 /**
+ * Ensure dependencies are installed
+ */
+async function ensureDependencies() {
+  const fs = require('fs');
+
+  // Check web dependencies
+  const webPackageJson = path.join(WEB_DIR, 'package.json');
+  if (fs.existsSync(webPackageJson) && !isNodeModulesInstalled(WEB_DIR, 'express')) {
+    console.log('📦 Installing web interface dependencies...');
+    try {
+      await installDependencies(WEB_DIR, 'Web Interface');
+    } catch (error) {
+      console.error(`✗ Failed to install web dependencies: ${error.message}`);
+    }
+  }
+
+  // Check MCP dependencies
+  const mcpPackageJson = path.join(MCP_DIR, 'package.json');
+  if (fs.existsSync(mcpPackageJson) && !isNodeModulesInstalled(MCP_DIR, '@modelcontextprotocol')) {
+    console.log('📦 Installing MCP server dependencies...');
+    try {
+      await installDependencies(MCP_DIR, 'MCP Server');
+    } catch (error) {
+      console.error(`✗ Failed to install MCP dependencies: ${error.message}`);
+    }
+  }
+}
+
+/**
  * Main hook execution
  */
 async function main() {
   try {
+    // First, ensure dependencies are installed
+    await ensureDependencies();
+
     // Check if server is already running
     const isRunning = await isServerRunning();
 
     if (isRunning) {
-      console.log('✓ Git Flow Master web interface is already running');
+      console.log('✓ Aureus web interface is already running');
     } else {
       // Start the server (with polling wait)
       await startServer();

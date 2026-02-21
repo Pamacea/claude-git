@@ -1,5 +1,5 @@
 /**
- * Git Flow Master v0.7.0 - Premium UI Features
+ * Aureus v0.8.1 - Premium UI Features
  * Theme Toggle, Sidebar Management, Status API Integration
  */
 
@@ -8,27 +8,23 @@
 // ============================================================================
 
 const ThemeManager = {
-  STORAGE_KEY: 'git-flow-master-theme',
+  STORAGE_KEY: 'aureus-theme',
 
   init() {
-    // Load saved theme or use system preference
     const savedTheme = localStorage.getItem(this.STORAGE_KEY);
     if (savedTheme) {
       this.setTheme(savedTheme);
     } else {
-      // Auto-detect system preference
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       this.setTheme(prefersDark ? 'dark' : 'light');
     }
 
-    // Listen for system theme changes
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
       if (!localStorage.getItem(this.STORAGE_KEY)) {
         this.setTheme(e.matches ? 'dark' : 'light');
       }
     });
 
-    // Setup toggle button
     const toggleBtn = document.getElementById('themeToggle');
     if (toggleBtn) {
       toggleBtn.addEventListener('click', () => this.toggle());
@@ -45,16 +41,15 @@ const ThemeManager = {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem(this.STORAGE_KEY, theme);
 
-    // Update icons
     const sunIcon = document.querySelector('.sun-icon');
     const moonIcon = document.querySelector('.moon-icon');
 
     if (theme === 'dark') {
-      sunIcon.style.display = 'block';
-      moonIcon.style.display = 'none';
+      if (sunIcon) sunIcon.style.display = 'block';
+      if (moonIcon) moonIcon.style.display = 'none';
     } else {
-      sunIcon.style.display = 'none';
-      moonIcon.style.display = 'block';
+      if (sunIcon) sunIcon.style.display = 'none';
+      if (moonIcon) moonIcon.style.display = 'block';
     }
   },
 
@@ -84,7 +79,6 @@ const SidebarManager = {
       closeSidebarBtn.addEventListener('click', () => this.close());
     }
 
-    // Close on backdrop click - store reference for cleanup
     this.backdropHandler = (e) => {
       const sidebar = document.getElementById('sidebar');
       const settingsBtn = document.getElementById('settingsBtn');
@@ -96,7 +90,6 @@ const SidebarManager = {
     };
     document.addEventListener('click', this.backdropHandler);
 
-    // Close on Escape key - exclude inputs
     this.keydownHandler = (e) => {
       const sidebar = document.getElementById('sidebar');
       if (e.key === 'Escape' &&
@@ -126,17 +119,7 @@ const SidebarManager = {
     if (settingsBtn) settingsBtn.classList.remove('active');
   },
 
-  toggle() {
-    const sidebar = document.getElementById('sidebar');
-    if (sidebar && sidebar.classList.contains('open')) {
-      this.close();
-    } else {
-      this.open();
-    }
-  },
-
   destroy() {
-    // Cleanup event listeners to prevent memory leak
     if (this.backdropHandler) {
       document.removeEventListener('click', this.backdropHandler);
       this.backdropHandler = null;
@@ -154,13 +137,11 @@ const SidebarManager = {
 
 const StatusManager = {
   statusCheckInterval: null,
-  CHECK_INTERVAL: 30000, // 30 seconds
+  CHECK_INTERVAL: 30000,
 
   async init() {
-    // Initial status check
     await this.checkStatus();
 
-    // Setup auto-refresh
     this.statusCheckInterval = setInterval(() => {
       this.checkStatus();
     }, this.CHECK_INTERVAL);
@@ -180,19 +161,24 @@ const StatusManager = {
   },
 
   updateStatusIndicator(status) {
-    const statusDot = document.getElementById('statusDot');
+    const statusBadge = document.getElementById('statusBadge');
+    if (!statusBadge) return;
 
-    if (!statusDot) return;
+    const statusText = statusBadge.querySelector('.status-text');
+    if (!statusText) return;
 
     if (status === 'online') {
-      statusDot.classList.add('connected');
+      statusBadge.classList.add('online');
+      statusBadge.classList.remove('offline');
+      statusText.textContent = 'Online';
     } else {
-      statusDot.classList.remove('connected');
+      statusBadge.classList.add('offline');
+      statusBadge.classList.remove('online');
+      statusText.textContent = 'Offline';
     }
   },
 
   updateStatistics(stats) {
-    // Update stat cards
     const updateElement = (id, value) => {
       const el = document.getElementById(id);
       if (el) el.textContent = value;
@@ -200,16 +186,13 @@ const StatusManager = {
 
     updateElement('repoCount', stats.repositories || 0);
     updateElement('hooksCount', stats.hooksInstalled || 0);
-    updateElement('commitsCount', stats.recentCommits || 0);
 
-    // Format uptime
     const uptime = stats.uptime || 0;
     updateElement('uptimeValue', this.formatUptime(uptime));
 
-    // Update sidebar stats
     updateElement('statTotalRepos', stats.repositories || 0);
     updateElement('statTotalHooks', stats.hooksInstalled || 0);
-    updateElement('statCompliance', '0%'); // Will be calculated later
+    updateElement('statCompliance', '0%');
   },
 
   formatUptime(seconds) {
@@ -234,117 +217,16 @@ const StatusManager = {
 };
 
 // ============================================================================
-// VALIDATOR
+// GLOBAL FUNCTIONS
 // ============================================================================
-
-const Validator = {
-  sanitizeString(str) {
-    if (typeof str !== 'string') return '';
-    const div = document.createElement('div');
-    div.textContent = str;
-    return div.innerHTML;
-  },
-
-  validateNumber(num) {
-    const n = parseInt(num, 10);
-    if (!Number.isFinite(n) || n < 0) return 0;
-    return n;
-  },
-
-  validateRepoName(name) {
-    if (typeof name !== 'string') return '';
-    if (name.length > 255) return name.substring(0, 255);
-    return this.sanitizeString(name);
-  }
-};
-
-// ============================================================================
-// GLOBAL FUNCTIONS (for HTML onclick handlers)
-// ============================================================================
-
-// Quick Actions
-async function scanAllRepos() {
-  try {
-    const response = await fetch(`${API_BASE}/scan-repos`, {
-      method: 'POST'
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
-    }
-
-    const data = await response.json();
-
-    if (data.success) {
-      const count = Validator.validateNumber(data.count);
-      Toast.success(`Scanned ${count} repositories successfully!`);
-
-      // Refresh state after scan
-      if (typeof refreshState === 'function') {
-        await refreshState();
-      }
-    } else {
-      Toast.error('Failed to scan repositories');
-    }
-  } catch (error) {
-    console.error('Scan error:', error);
-    Toast.error('Error scanning repositories');
-  }
-}
-
-async function loadCurrentRepo() {
-  try {
-    const response = await fetch(`${API_BASE}/load-current-repo`, {
-      method: 'POST'
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
-    }
-
-    const data = await response.json();
-
-    if (data.success) {
-      const repo = Validator.validateRepoName(data.repo);
-      Toast.success(`Loaded repository: ${repo}`);
-
-      if (typeof refreshState === 'function') {
-        await refreshState();
-      }
-    } else {
-      const errorMsg = Validator.sanitizeString(data.error || 'Failed to load repository');
-      Toast.error(errorMsg);
-    }
-  } catch (error) {
-    console.error('Load repo error:', error);
-    Toast.error('Error loading repository');
-  }
-}
-
-async function refreshState() {
-  try {
-    // Trigger Alpine data refresh
-    if (window.Alpine) {
-      const app = Alpine.store('gitFlowApp');
-      if (app && typeof app.loadState === 'function') {
-        await app.loadState();
-      }
-    }
-
-    // Refresh status
-    await StatusManager.checkStatus();
-  } catch (error) {
-    console.error('Refresh error:', error);
-  }
-}
 
 async function saveConfig() {
   try {
     const projectNameInput = document.getElementById('configProjectName');
     const commitTypeInput = document.getElementById('configCommitType');
 
-    const projectName = Validator.sanitizeString(projectNameInput?.value || '');
-    const commitType = Validator.sanitizeString(commitTypeInput?.value || 'PATCH');
+    const projectName = Sanitizer.sanitize(projectNameInput?.value || '');
+    const commitType = Sanitizer.sanitize(commitTypeInput?.value || 'PATCH');
 
     const response = await fetch(`${API_BASE}/config`, {
       method: 'PUT',
@@ -374,14 +256,12 @@ async function saveConfig() {
 // ============================================================================
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Initialize managers
   ThemeManager.init();
   SidebarManager.init();
   StatusManager.init();
 });
 
-// Cleanup on page unload
 window.addEventListener('beforeunload', () => {
   StatusManager.destroy();
-  SidebarManager.destroy(); // Cleanup memory leak
+  SidebarManager.destroy();
 });

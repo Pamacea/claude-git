@@ -1,4 +1,4 @@
-# Git Flow Master - Skill
+# Aureus - Skill
 
 > Advanced Git automation with Versioned Release Convention, smart releases, and conflict resolution
 
@@ -97,7 +97,7 @@ Analyzing changes...
   Breaking: no
 
 Generated message:
-  UPDATE: Git Flow Master - v1.1.0
+  UPDATE: Aureus - v1.1.0
 
   - Added: Email format validation
   - Added: Password strength requirements
@@ -105,7 +105,7 @@ Generated message:
 
 Commit? [Y/n/q] Y
 
-Committed: UPDATE: Git Flow Master - v1.1.0
+Committed: UPDATE: Aureus - v1.1.0
   SHA: a1b2c3d4
 
 Push to origin? [Y/n] Y
@@ -133,7 +133,7 @@ Amend the last commit (keeps same version, adds to body).
 /amend-commit
 
 Last commit:
-  PATCH: Git Flow Master - v1.0.1
+  PATCH: Aureus - v1.0.1
 
   - Fixed: Pre-commit hook pattern
 
@@ -144,14 +144,14 @@ Amendment:
   - Fixed: Additional edge case
 
 Amended commit:
-  PATCH: Git Flow Master - v1.0.1
+  PATCH: Aureus - v1.0.1
 
   - Fixed: Pre-commit hook pattern
   - Fixed: Additional edge case
 
 Amend? [Y/n/q] Y
 
-Amended: PATCH: Git Flow Master - v1.0.1
+Amended: PATCH: Aureus - v1.0.1
 ```
 
 **Safety check:**
@@ -182,14 +182,14 @@ Analyze commits since last tag and create a release.
 Analyzing commits since v1.2.3...
 
 Found 8 commits:
-  RELEASE: Git Flow Master - v2.0.0-rc1
-  UPDATE: Git Flow Master - v1.3.0-rc1
-  UPDATE: Git Flow Master - v1.3.0-rc2
-  PATCH: Git Flow Master - v1.2.4-rc1
-  UPDATE: Git Flow Master - v1.3.0-rc3
-  PATCH: Git Flow Master - v1.2.4-rc2
-  PATCH: Git Flow Master - v1.2.4-rc3
-  UPDATE: Git Flow Master - v1.3.0-rc4
+  RELEASE: Aureus - v2.0.0-rc1
+  UPDATE: Aureus - v1.3.0-rc1
+  UPDATE: Aureus - v1.3.0-rc2
+  PATCH: Aureus - v1.2.4-rc1
+  UPDATE: Aureus - v1.3.0-rc3
+  PATCH: Aureus - v1.2.4-rc2
+  PATCH: Aureus - v1.2.4-rc3
+  UPDATE: Aureus - v1.3.0-rc4
 
 Categorization:
   RELEASE: 1  -> MAJOR bump
@@ -224,7 +224,7 @@ Create release? [Y/n/q] Y
 
 Updated package.json: 1.2.3 -> 2.0.0
 Updated CHANGELOG.md
-Committed: RELEASE: Git Flow Master - v2.0.0
+Committed: RELEASE: Aureus - v2.0.0
 Created tag: v2.0.0
 Pushed to origin/main
 Pushed tag to origin
@@ -508,21 +508,21 @@ TYPE: PROJECT NAME - vVERSION
 ### Examples
 
 ```
-RELEASE: Git Flow Master - v2.0.0
+RELEASE: Aureus - v2.0.0
 
 - Breaking: Redesigned commit message format
 - Breaking: Changed hook configuration structure
 - Added: New amend workflow for small fixes
 - Added: PowerShell hooks for Windows support
 
-UPDATE: Git Flow Master - v1.1.0
+UPDATE: Aureus - v1.1.0
 
 - Added: Web interface for repository management
 - Added: Version suggestion API endpoint
 - Improved: Hook installation now supports Windows
 - Fixed: Configuration loading edge cases
 
-PATCH: Git Flow Master - v1.0.1
+PATCH: Aureus - v1.0.1
 
 - Fixed: Pre-commit hook secret scanning pattern
 - Fixed: Commit message validation edge case

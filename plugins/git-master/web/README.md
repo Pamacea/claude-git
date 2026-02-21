@@ -1,4 +1,4 @@
-# Git Flow Master - Web Interface
+# Aureus - Web Interface
 
 Local web interface for managing Git conventions, hooks, and repositories.
 

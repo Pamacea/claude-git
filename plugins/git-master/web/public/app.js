@@ -1,4 +1,4 @@
-// Git Flow Master - Web Interface App (SECURED)
+// Aureus - Web Interface App (SECURED)
 //
 // Versioned Release Convention:
 // - RELEASE: Project Name - v1.0.0 (Major)
@@ -179,6 +179,7 @@ function gitFlowApp() {
     commitTypes: {},
     recentCommits: [],
     error: null,
+    hasLoadedState: false,  // Track if state has been loaded
 
     // UI State
     showCommitModal: false,
@@ -188,6 +189,10 @@ function gitFlowApp() {
     rawConfig: '',
     lastCommit: null,
     suggestedVersions: null,
+
+    // Loading States
+    isScanning: false,
+    isLoading: false,
 
     // Commit Form (Versioned Release Convention)
     commitForm: {
@@ -206,9 +211,87 @@ function gitFlowApp() {
     // Init
     async init() {
       await this.loadConfig();
+
+      // Set up watchers BEFORE loading state
+      this.$watch('config', () => this.updateRawConfig());
+      this.$watch('hasLoadedState', () => Alpine.nextTick(() => this.updateUIForState()));
+      // Watch repositories array for changes (deep watch for array content)
+      this.$watch('repositories', () => Alpine.nextTick(() => this.updateUIForState()), { deep: true });
+
+      // Load existing state to show repositories (no scan)
       await this.loadState();
       await this.loadCommitTypes();
-      this.$watch('config', () => this.updateRawConfig());
+
+      // Initial status poll
+      this.pollStatus();
+
+      // Poll status every 30 seconds
+      setInterval(() => this.pollStatus(), 30000);
+    },
+
+    // Poll status endpoint
+    async pollStatus() {
+      try {
+        const status = await this.api('/status');
+        this.updateStats(status);
+      } catch (error) {
+        console.error('Failed to poll status:', error);
+        // Silently fail - stats will update on next successful poll
+      }
+    },
+
+    // Update UI stats from status endpoint
+    updateStats(status) {
+      if (!status || !status.statistics) return;
+
+      const stats = status.statistics;
+
+      // Update repo count
+      const repoCountEl = document.getElementById('repoCount');
+      if (repoCountEl) {
+        repoCountEl.textContent = stats.repositories || 0;
+      }
+
+      // Update hooks count
+      const hooksCountEl = document.getElementById('hooksCount');
+      if (hooksCountEl) {
+        hooksCountEl.textContent = stats.hooksInstalled || 0;
+      }
+
+      // Update uptime
+      const uptimeEl = document.getElementById('uptimeValue');
+      if (uptimeEl) {
+        uptimeEl.textContent = this.formatUptime(stats.uptime || 0);
+      }
+
+      // Update status badge
+      const statusBadgeEl = document.getElementById('statusBadge');
+      if (statusBadgeEl) {
+        const statusText = statusBadgeEl.querySelector('.status-text');
+        if (statusText) {
+          statusText.textContent = (status.status || 'unknown').charAt(0).toUpperCase() + (status.status || 'unknown').slice(1);
+        }
+        // Update badge class based on status
+        statusBadgeEl.className = 'status-badge ' +
+          (status.status === 'online' ? 'status-online' : 'status-offline');
+      }
+    },
+
+    // Format uptime seconds to human-readable format
+    formatUptime(seconds) {
+      if (typeof seconds !== 'number' || seconds < 0) return '0s';
+
+      const hours = Math.floor(seconds / 3600);
+      const minutes = Math.floor((seconds % 3600) / 60);
+      const secs = seconds % 60;
+
+      if (hours > 0) {
+        return `${hours}h ${minutes}m ${secs}s`;
+      } else if (minutes > 0) {
+        return `${minutes}m ${secs}s`;
+      } else {
+        return `${secs}s`;
+      }
     },
 
     safeDisplay(text) {
@@ -294,9 +377,117 @@ function gitFlowApp() {
         const state = await this.api('/state');
         this.repositories = state.repositories || [];
         this.activeHooks = state.activeHooks || {};
+        this.hasLoadedState = true;
+        // Note: updateUIForState() is called via the watcher on hasLoadedState
       } catch (error) {
         console.error('Failed to load state:', error);
+        this.hasLoadedState = true;
+        // Note: updateUIForState() is called via the watcher on hasLoadedState
       }
+    },
+
+    // Update UI based on state
+    updateUIForState() {
+      const emptyState = document.getElementById('emptyState');
+      const reposContainer = document.getElementById('reposContainer');
+
+      if (!emptyState || !reposContainer) return;
+
+      if (this.repositories.length === 0 && this.hasLoadedState) {
+        emptyState.style.display = 'block';
+        reposContainer.style.display = 'none';
+      } else if (this.repositories.length > 0) {
+        emptyState.style.display = 'none';
+        reposContainer.style.display = 'block';
+        this.renderRepositories();
+      }
+    },
+
+    // Render repository cards
+    renderRepositories() {
+      const container = document.getElementById('reposContainer');
+      if (!container) return;
+
+      container.innerHTML = this.repositories.map((repo, index) => {
+        const hasHooks = this.hasHooks(repo.path);
+
+        return `
+          <div class="card" style="animation-delay: ${index * 0.05}s;">
+            <div class="repo-card-header">
+              <div class="repo-card-header-left">
+                <svg class="repo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-6l-2-2H5a2 2 0 0 0-2 2z"/>
+                </svg>
+                <div>
+                  <div class="repo-name">${this.safeDisplay(repo.name)}</div>
+                  <div class="repo-path">${this.safeDisplay(repo.path)}</div>
+                </div>
+              </div>
+              <div class="repo-card-header-right">
+                <span class="repo-branch">
+                  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="6" y1="3" x2="6" y2="15"/>
+                    <circle cx="18" cy="6" r="3"/>
+                    <circle cx="6" cy="18" r="3"/>
+                    <path d="M18 9a9 9 0 0 1-9 9"/>
+                  </svg>
+                  ${this.safeDisplay(repo.branch || 'main')}
+                </span>
+                <span class="repo-status ${hasHooks ? 'status-enabled' : 'status-disabled'}">
+                  ${hasHooks ? '🪝 Hooks Active' : '⚠ No Hooks'}
+                </span>
+              </div>
+            </div>
+            <div class="repo-card-content">
+              <div class="repo-stats">
+                ${repo.recentCommits && repo.recentCommits.length > 0 ? `
+                  <span class="repo-stat">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="12" r="10"/>
+                      <polyline points="12,6 12,12 16,14"/>
+                    </svg>
+                    ${repo.recentCommits.length} commits
+                  </span>
+                ` : ''}
+              </div>
+              <div class="repo-actions">
+                <button class="repo-action-btn repo-action-view" onclick="window.viewRepo && window.viewRepo('${this.safeDisplay(repo.path)}')">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                  View
+                </button>
+                <button class="repo-action-btn ${hasHooks ? 'repo-action-danger' : 'repo-action-primary'}"
+                        onclick="window.toggleHooks && window.toggleHooks('${this.safeDisplay(repo.path)}')">
+                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                    ${hasHooks
+                      ? '<path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/>'
+                      : '<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>'
+                    }
+                  </svg>
+                  ${hasHooks ? 'Disable' : 'Enable'}
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // Store repos globally for button handlers
+      window.currentRepos = this.repositories;
+      window.viewRepo = (path) => {
+        const repo = this.repositories.find(r => r.path === path);
+        if (repo) {
+          alert(`Repository: ${repo.name}\nBranch: ${repo.branch || 'N/A'}\nPath: ${repo.path}`);
+        }
+      };
+      window.toggleHooks = (path) => {
+        const repo = this.repositories.find(r => r.path === path);
+        if (repo) {
+          this.toggleHooks(repo).then(() => this.renderRepositories());
+        }
+      };
     },
 
     // Load Commit Types
@@ -346,6 +537,7 @@ function gitFlowApp() {
         });
 
         this.loadRecentCommits();
+        this.pollStatus(); // Update stats after scan
         this.error = null;
       } catch (error) {
         console.error('Failed to scan repositories:', error);
@@ -449,6 +641,8 @@ function gitFlowApp() {
         });
 
         this.error = null;
+        this.pollStatus(); // Update stats after toggling hooks
+        this.renderRepositories(); // Re-render cards to update hook status
       } catch (error) {
         console.error('Failed to toggle hooks:', error);
         this.error = 'Failed to toggle hooks';
@@ -600,6 +794,11 @@ function gitFlowApp() {
       }
     },
 
+    // Update stats after commit changes
+    async updateStatsAfterCommit() {
+      await this.pollStatus();
+    },
+
     // Amend Commit
     async amendCommit() {
       if (!this.amendForm.message) {
@@ -693,6 +892,113 @@ function gitFlowApp() {
       });
 
       return total > 0 ? Math.round((compliant / total) * 100) : 0;
+    },
+
+    // Scan All Repositories (called by button)
+    async scanAllRepos() {
+      if (this.isScanning) return; // Prevent double-click
+
+      try {
+        this.isScanning = true;
+        this.error = null;
+
+        const result = await this.api('/scan');
+        this.repositories = result.repositories || [];
+
+        this.repositories = this.repositories.map(repo => ({
+          ...repo,
+          name: Sanitizer.sanitize(repo.name || ''),
+          path: repo.path,
+          branch: Sanitizer.sanitize(repo.branch || '')
+        }));
+
+        await this.api('/state', {
+          method: 'PUT',
+          body: JSON.stringify({
+            repositories: this.repositories,
+            activeHooks: this.activeHooks,
+            lastSync: new Date().toISOString()
+          })
+        });
+
+        this.hasLoadedState = true;
+        this.loadRecentCommits();
+        this.error = null;
+
+        // Note: updateUIForState() is called via the watcher on repositories
+
+        // Update stats after scan
+        this.pollStatus();
+
+        // Show toast
+        if (typeof Toast !== 'undefined') {
+          Toast.success(`Scanned ${this.repositories.length} repositories`);
+        }
+      } catch (error) {
+        console.error('Failed to scan repositories:', error);
+        this.error = 'Failed to scan repositories';
+        if (typeof Toast !== 'undefined') {
+          Toast.error('Failed to scan repositories');
+        }
+      } finally {
+        this.isScanning = false;
+      }
+    },
+
+    // Load Current Repository (called by button)
+    async loadCurrentRepo() {
+      if (this.isLoading) return; // Prevent double-click
+
+      try {
+        this.isLoading = true;
+        this.error = null;
+
+        // Get current working directory from server
+        const cwdData = await this.api('/cwd');
+        const cwd = cwdData.cwd;
+
+        // Scan current directory
+        const result = await this.api(`/scan?dir=${encodeURIComponent(cwd)}`);
+
+        if (result.repositories && result.repositories.length > 0) {
+          this.repositories = result.repositories.map(repo => ({
+            ...repo,
+            name: Sanitizer.sanitize(repo.name || ''),
+            path: repo.path,
+            branch: Sanitizer.sanitize(repo.branch || '')
+          }));
+
+          await this.api('/state', {
+            method: 'PUT',
+            body: JSON.stringify({
+              repositories: this.repositories,
+              activeHooks: this.activeHooks,
+              lastSync: new Date().toISOString()
+            })
+          });
+
+          this.hasLoadedState = true;
+          this.error = null;
+          // Note: updateUIForState() is called via the watcher on repositories
+          this.pollStatus(); // Update stats after loading repo
+
+          if (typeof Toast !== 'undefined') {
+            Toast.success(`Loaded: ${this.repositories[0].name}`);
+          }
+        } else {
+          if (typeof Toast !== 'undefined') {
+            Toast.error('No git repository found in current directory');
+          }
+        }
+      } catch (error) {
+        console.error('Failed to load current repo:', error);
+        this.error = 'Failed to load repository';
+        if (typeof Toast !== 'undefined') {
+          Toast.error('Failed to load repository');
+        }
+      } finally {
+        this.isLoading = false;
+      }
     }
   };
 }

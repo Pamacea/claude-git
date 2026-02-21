@@ -1,10 +1,10 @@
-# Git Flow Master - MCP Server
+# Aureus - MCP Server
 
 Model Context Protocol server for Claude Code integration.
 
 ## Overview
 
-This MCP server provides Git Flow Master tools and resources directly to Claude Code, enabling native Git automation with Conventional Commits.
+This MCP server provides Aureus tools and resources directly to Claude Code, enabling native Git automation with Conventional Commits.
 
 ## Installation
 
@@ -43,8 +43,8 @@ npm install
 
 | Tool | Description |
 |------|-------------|
-| `git_get_config` | Get Git Flow Master configuration |
-| `git_update_config` | Update Git Flow Master configuration |
+| `git_get_config` | Get Aureus configuration |
+| `git_update_config` | Update Aureus configuration |
 
 ### Hooks Tools
 

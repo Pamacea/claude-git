@@ -1,6 +1,6 @@
 /**
  * Configuration Storage (CommonJS)
- * Load and save Git Flow Master configuration
+ * Load and save Aureus configuration
  */
 
 const fs = require('fs').promises;

@@ -1,7 +1,7 @@
 {
   "name": "aureus",
   "description": "Aureus - Advanced Git automation with Versioned Release Convention (RELEASE/UPDATE/PATCH), smart releases, amend workflow, and conflict resolution",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "author": {
     "name": "Yanis"
   },

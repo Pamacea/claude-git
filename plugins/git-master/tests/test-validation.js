@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Git Flow Master - Commit Message Validation Tests
+ * Aureus - Commit Message Validation Tests
  * Tests commit message validation logic
  */
 

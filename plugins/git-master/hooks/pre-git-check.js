@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Git Flow Master - Pre Git Commit Check Hook (Node.js Wrapper)
+ * Aureus - Pre Git Commit Check Hook (Node.js Wrapper)
  * Cross-platform wrapper that detects OS and calls appropriate script
  */
 
