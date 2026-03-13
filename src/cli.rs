@@ -5,7 +5,7 @@ use clap::{Parser, Subcommand, ValueEnum, Args};
 #[derive(Parser)]
 #[command(name = "aureus")]
 #[command(about = "Aureus - Versioned Release Convention CLI", long_about = None)]
-#[command(version = "0.11.0")]
+#[command(version = "0.11.1")]
 #[command(author = "Yanis <yanis@example.com>")]
 #[command(propagate_version = true)]
 pub struct CliArgs {
@@ -332,6 +332,7 @@ impl CommitType {
         }
     }
 
+    #[cfg(test)]
     pub fn from_str(s: &str) -> Option<Self> {
         match s.to_uppercase().as_str() {
             "RELEASE" => Some(Self::Release),

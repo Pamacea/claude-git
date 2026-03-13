@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 use std::str::FromStr;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
+#[allow(dead_code)]
 pub struct Version {
     pub major: u32,
     pub minor: u32,
@@ -65,6 +66,7 @@ impl FromStr for Version {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[allow(dead_code)]
 pub struct VersionSuggestions {
     pub current: Version,
     pub release: Version,

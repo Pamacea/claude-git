@@ -1,8 +1,10 @@
 //! Shared utility functions
 
 #[cfg(test)]
-use anyhow::{Context, Result};
 use std::path::Path;
+
+#[cfg(test)]
+use anyhow::{Context, Result};
 
 /// Truncate string to max length with ellipsis
 #[cfg(test)]

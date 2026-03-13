@@ -1,18 +1,21 @@
 //! Git operations using git2
 
+#[cfg(test)]
 use anyhow::Context;
+
 pub mod executor;
 pub mod hooks;
 pub mod diff;
 pub mod status;
 
 pub use executor::{add_files, create_commit, get_last_commit, get_tags, is_repo, amend_last_commit, create_tag};
-pub use status::{get_status, get_status_summary, StatusEntry, StatusSummary, FileStatus};
+pub use status::{get_status, get_status_summary, StatusSummary, FileStatus};
 pub use diff::{get_diff, get_staged_files};
 
 use crate::cli::CommitType;
 
 /// Get the repository path from current directory
+#[cfg(test)]
 pub fn get_repo_path() -> Result<std::path::PathBuf, anyhow::Error> {
     std::env::current_dir().context("Cannot get current directory")
 }

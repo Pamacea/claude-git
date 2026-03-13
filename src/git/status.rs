@@ -121,6 +121,7 @@ impl StatusSummary {
         !self.entries.is_empty()
     }
 
+    #[cfg(test)]
     pub fn staged_count(&self) -> usize {
         self.entries.iter()
             .filter(|e| matches!(e.status, FileStatus::Added | FileStatus::Modified | FileStatus::Renamed))

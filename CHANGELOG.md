@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.11.1] - 2025-03-13
+
+### Fixed
+- **All warnings eliminated** - From 15 to 0 warnings (-100%)
+- Moved unused functions behind `#[cfg(test)]` for smaller binary
+- Removed unused imports across all modules
+- Added `#[allow(dead_code)]` for public struct fields
+
+### Changed
+- Cleaner build output with zero compiler warnings
+
+---
+
 ## [0.11.0] - 2025-03-13
 
 ### Added

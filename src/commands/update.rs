@@ -6,6 +6,7 @@ use std::env;
 
 use crate::cli::UpdateCommand;
 
+#[cfg(test)]
 const CRATES_API: &str = "https://crates.io/api/v1/crates/aureus-vrc";
 const CURRENT_VERSION: &str = env!("CARGO_PKG_VERSION");
 
@@ -100,6 +101,7 @@ fn get_latest_version() -> Result<String> {
     // Ok(version.to_string())
 }
 
+#[cfg(test)]
 pub fn get_current_version() -> &'static str {
     CURRENT_VERSION
 }

@@ -4,7 +4,10 @@ use anyhow::{Context, Result, anyhow};
 use git2::{
     Repository, Signature, Commit,
 };
-use std::path::{Path, PathBuf};
+use std::path::Path;
+
+#[cfg(test)]
+use std::path::PathBuf;
 
 /// Open repository, searching upwards from given path
 pub fn get_repo(path: &Path) -> Result<Repository> {
@@ -13,6 +16,7 @@ pub fn get_repo(path: &Path) -> Result<Repository> {
 }
 
 /// Get the current repository path
+#[cfg(test)]
 pub fn get_repo_path(repo: &Repository) -> Result<PathBuf> {
     repo.workdir()
         .map(|p| p.to_path_buf())
@@ -33,6 +37,7 @@ pub fn get_tags(repo_path: &Path) -> Result<Vec<String>> {
 }
 
 /// Get current branch name
+#[cfg(test)]
 pub fn get_current_branch(repo_path: &Path) -> Result<String> {
     let repo = get_repo(repo_path)?;
     let head = repo.head()?;
@@ -63,6 +68,7 @@ pub fn get_last_commit(repo_path: &Path) -> Result<CommitInfo> {
     })
 }
 
+#[allow(dead_code)]
 pub struct CommitInfo {
     pub id: String,
     pub message: String,

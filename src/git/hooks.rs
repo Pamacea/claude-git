@@ -122,6 +122,7 @@ pub struct HookStatus {
 }
 
 impl HookStatus {
+    #[cfg(test)]
     pub fn is_complete(&self) -> bool {
         self.installed.len() == 2 && self.failed.is_empty()
     }
@@ -132,6 +133,7 @@ impl HookStatus {
 }
 
 /// Validate commit message from hook
+#[cfg(test)]
 pub fn validate_commit_message(msg_file: &Path) -> Result<bool> {
     let content = fs::read_to_string(msg_file)
         .context("Failed to read commit message file")?;
@@ -143,7 +145,8 @@ pub fn validate_commit_message(msg_file: &Path) -> Result<bool> {
     }
 }
 
-/// Run pre-commit checks
+/// Run pre-commit checks (legacy, use run_pre_commit_checks instead)
+#[cfg(test)]
 pub fn run_pre_commit(_repo_path: &Path) -> Result<bool> {
     // For now, just pass
     // TODO: Add secret scanning, linting, etc.

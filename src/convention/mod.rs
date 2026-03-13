@@ -20,6 +20,7 @@ pub mod version;
 pub mod detect;
 
 pub use parser::{parse_message, generate_message};
+// Public API exports - may generate unused warning in bin but are library API
 pub use version::{Version, VersionSuggestions, bump_version, parse_version};
 pub use detect::detect_commit_type;
 pub use crate::cli::CommitType;
