@@ -44,11 +44,11 @@ TYPE: PROJECT - vX.Y.Z
 ## Install
 
 ```bash
-# From source
-cargo install --path .
+# From crates.io
+cargo install aureus-vrc
 
-# From GitHub (coming soon)
-cargo install aureus
+# From source
+cargo install --git https://github.com/Pamacea/aureus
 ```
 
 ## Cross-Platform

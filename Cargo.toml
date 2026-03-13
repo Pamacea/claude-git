@@ -1,16 +1,16 @@
 [package]
-name = "aureus"
-version = "0.9.0"
+name = "aureus-vrc"
+version = "0.9.1"
 edition = "2021"
 authors = ["Yanis"]
-description = "Aureus - Versioned Release Convention CLI for Git workflow automation"
+description = "Aureus VRC - Versioned Release Convention CLI for Git workflow automation"
 license = "MIT"
 repository = "https://github.com/Pamacea/aureus"
 homepage = "https://github.com/Pamacea/aureus"
 readme = "README.md"
 keywords = ["git", "versioning", "semver", "cli", "conventional-commits"]
 categories = ["development-tools", "command-line-utilities"]
-include = ["LICENSE", "README.md", "CHANGELOG.md"]
+include = ["LICENSE", "README.md", "CHANGELOG.md", "src/**/*.rs", "Cargo.toml"]
 
 [dependencies]
 # CLI parsing
