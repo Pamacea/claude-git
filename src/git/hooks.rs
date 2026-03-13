@@ -149,3 +149,91 @@ pub fn run_pre_commit(_repo_path: &Path) -> Result<bool> {
     // TODO: Add secret scanning, linting, etc.
     Ok(true)
 }
+
+/// Result of pre-commit checks
+pub struct PreCommitResult {
+    pub passed: bool,
+    pub warnings: Vec<String>,
+}
+
+/// Run comprehensive pre-commit checks
+pub fn run_pre_commit_checks(repo_path: &Path) -> Result<PreCommitResult> {
+    let mut warnings = Vec::new();
+    let mut passed = true;
+
+    // Check for common secret patterns in staged files
+    if let Ok(staged_files) = crate::git::get_staged_files(repo_path) {
+        for file in staged_files {
+            if let Ok(content) = std::fs::read_to_string(repo_path.join(&file)) {
+                // Check for suspicious patterns
+                if content.contains("password") || content.contains("PASSWORD") {
+                    warnings.push(format!("Possible password in: {}", file));
+                    passed = false;
+                }
+                if content.contains("api_key") || content.contains("API_KEY") {
+                    warnings.push(format!("Possible API key in: {}", file));
+                    passed = false;
+                }
+                if content.contains("secret") || content.contains("SECRET") {
+                    warnings.push(format!("Possible secret in: {}", file));
+                    passed = false;
+                }
+            }
+        }
+    }
+
+    Ok(PreCommitResult { passed, warnings })
+}
+
+/// Get current git branch name
+pub fn get_current_branch(repo_path: &Path) -> Result<String> {
+    let repo = git2::Repository::open(repo_path)
+        .context("Failed to open git repository")?;
+
+    let head = repo.head()
+        .context("Failed to get HEAD")?;
+
+    let branch_name = head.shorthand()
+        .context("Failed to get branch name")?;
+
+    Ok(branch_name.to_string())
+}
+
+/// Suggest commit type based on branch name
+///
+/// - feature/* → UPDATE (new features)
+/// - bugfix/*, fix/*, hotfix/* → PATCH (bug fixes)
+/// - release/*, major/* → RELEASE (breaking changes)
+/// - refactor/* → UPDATE (refactoring)
+/// - chore/*, docs/*, test/* → PATCH (maintenance)
+/// - main, master, develop → None (let user decide)
+pub fn suggest_commit_type_for_branch(branch: &str) -> Option<&'static str> {
+    let branch_lower = branch.to_lowercase();
+
+    if branch_lower.starts_with("feature/") || branch_lower.starts_with("feat/") {
+        Some("UPDATE")
+    } else if branch_lower.starts_with("bugfix/")
+        || branch_lower.starts_with("fix/")
+        || branch_lower.starts_with("hotfix/")
+        || branch_lower.starts_with("patch/") {
+        Some("PATCH")
+    } else if branch_lower.starts_with("release/")
+        || branch_lower.starts_with("major/")
+        || branch_lower.starts_with("breaking/") {
+        Some("RELEASE")
+    } else if branch_lower.starts_with("refactor/")
+        || branch_lower.starts_with("enhance/")
+        || branch_lower.starts_with("improve/") {
+        Some("UPDATE")
+    } else if branch_lower.starts_with("chore/")
+        || branch_lower.starts_with("docs/")
+        || branch_lower.starts_with("test/")
+        || branch_lower.starts_with("style/")
+        || branch_lower.starts_with("ci/") {
+        Some("PATCH")
+    } else if branch == "main" || branch == "master" || branch == "develop" {
+        None // No suggestion for main branches
+    } else {
+        Some("PATCH") // Default to PATCH for unknown branches
+    }
+}

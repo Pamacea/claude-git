@@ -5,7 +5,7 @@ use clap::{Parser, Subcommand, ValueEnum, Args};
 #[derive(Parser)]
 #[command(name = "aureus")]
 #[command(about = "Aureus - Versioned Release Convention CLI", long_about = None)]
-#[command(version = "0.9.2")]
+#[command(version = "0.11.0")]
 #[command(author = "Yanis <yanis@example.com>")]
 #[command(propagate_version = true)]
 pub struct CliArgs {
@@ -167,6 +167,15 @@ pub enum HooksAction {
 
     /// Show hook status
     Status,
+
+    /// Validate commit message (called by git commit-msg hook)
+    ValidateCommit {
+        /// Path to commit message file
+        file: String,
+    },
+
+    /// Run pre-commit checks (called by git pre-commit hook)
+    PreCommit,
 }
 
 #[derive(Args, Clone)]

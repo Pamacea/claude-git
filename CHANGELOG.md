@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.11.0] - 2025-03-13
+
+### Added
+- **`aureus-vrc hooks validate-commit`** - Validate commit messages via git hook
+- **`aureus-vrc hooks pre-commit`** - Run pre-commit checks for secrets
+- **Branch-based commit type suggestions:**
+  - `feature/*` → UPDATE
+  - `bugfix/*`, `hotfix/*` → PATCH
+  - `release/*`, `major/*` → RELEASE
+  - `refactor/*` → UPDATE
+  - `chore/*`, `docs/*`, `test/*` → PATCH
+- **Pre-commit secret detection** - Warns about passwords, API keys, secrets in staged files
+- **Enhanced hooks status** - Shows current branch and suggested commit type
+
+### Changed
+- Hooks now provide helpful error messages with format examples
+- Pre-commit hook exits with error if secrets detected
+
+---
+
 ## [0.10.1] - 2025-03-13
 
 ### Changed
