@@ -7,7 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [0.11.2] - 2025-03-15
+## [0.11.3] - 2025-03-15
+
+### Fixed
+- **Critical PowerShell hook fix:** This is the same as 0.11.2 but republished due to crates.io immutability
+  - All fixes from 0.11.2 included
+  - Hook now works correctly on Windows without jq dependency
+
+Note: This release is identical to 0.11.2 but required a new version number due to crates.io not allowing overwrites.
+
+---
+
+## [0.11.2] - 2025-03-15 (yanked - use 0.11.3)
 
 ### Fixed
 - **Hook binary name:** PreToolUse hook now correctly uses `aureus-vrc` instead of `aureus`
