@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.11.5] - 2026-03-18
+
+### Fixed
+- **Critical: Silent hook injection failure** — `init --global` now properly reports errors if settings.json update fails (was silently swallowed with `let _ =`)
+- **Critical: Settings.json corruption** — Parse errors no longer silently wipe all settings; file is backed up to `.json.bak` with clear error message
+- **Windows BOM handling** — Strip UTF-8 BOM from settings.json (common on Windows editors)
+- **Post-write verification** — Init now verifies the hook was actually written to settings.json after save
+
+### Changed
+- **Safer JSON structure initialization** — Uses explicit `get()` + `map_or()` instead of implicit serde_json indexing to prevent silent type coercions
+- **Better error messages** — Hook injection failures now show actionable error messages instead of silent "success"
+
+---
+
 ## [0.11.4] - 2025-03-18
 
 ### Fixed

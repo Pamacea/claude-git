@@ -234,12 +234,21 @@ fn init_global(force: bool, no_hooks: bool) -> Result<()> {
             println!("  ✓ {}", format!("Created ~/.claude/hooks/{}", hook_filename).green());
         }
 
-        // Update settings.json
-        let _ = update_settings_json(&claude_dir, hook_filename);
+        // Update settings.json - inject hooks without removing existing ones
+        match update_settings_json(&claude_dir, hook_filename) {
+            Ok(_) => {},
+            Err(e) => {
+                eprintln!("  {} {}", "✗".red(), format!("Failed to update settings.json: {}", e).red());
+                eprintln!("    {}", "Hooks were NOT injected. Please check ~/.claude/settings.json manually.".yellow());
+                return Err(e);
+            }
+        }
     }
 
     // Update CLAUDE.md to include @AUREUS.md reference
-    let _ = update_claude_md(&claude_dir, force);
+    if let Err(e) = update_claude_md(&claude_dir, force) {
+        eprintln!("  {} {}", "⚠".yellow(), format!("Could not update CLAUDE.md: {}", e).yellow());
+    }
 
     println!();
     println!("✓ {}", "Aureus initialized successfully!".green());
@@ -358,16 +367,47 @@ fn update_claude_md(claude_dir: &std::path::Path, force: bool) -> Result<()> {
 fn update_settings_json(claude_dir: &std::path::Path, hook_filename: &str) -> Result<()> {
     let settings_path = claude_dir.join("settings.json");
 
-    let mut settings = if settings_path.exists() {
-        let content = fs::read_to_string(&settings_path)?;
-        serde_json::from_str(&content).unwrap_or_else(|_| serde_json::json!({}))
+    // Read existing settings, preserving ALL content
+    let mut settings: serde_json::Value = if settings_path.exists() {
+        let content = fs::read_to_string(&settings_path)
+            .context("Failed to read settings.json")?;
+
+        // Strip BOM if present (common on Windows)
+        let content = content.strip_prefix('\u{feff}').unwrap_or(&content);
+
+        match serde_json::from_str(content) {
+            Ok(v) => v,
+            Err(e) => {
+                // Backup corrupted file instead of silently discarding
+                let backup_path = settings_path.with_extension("json.bak");
+                let _ = fs::copy(&settings_path, &backup_path);
+                eprintln!("  {} {}", "⚠".yellow(),
+                    format!("settings.json parse error: {}. Backed up to settings.json.bak", e).yellow());
+                return Err(anyhow::anyhow!(
+                    "Cannot parse settings.json (backed up). Please fix it manually and re-run init."
+                ));
+            }
+        }
     } else {
         serde_json::json!({})
     };
 
-    // Ensure hooks.PreToolUse exists
-    if !settings["hooks"]["PreToolUse"].is_array() {
-        settings["hooks"]["PreToolUse"] = serde_json::json!([]);
+    // Ensure settings is an object
+    if !settings.is_object() {
+        return Err(anyhow::anyhow!("settings.json is not a JSON object"));
+    }
+
+    // Ensure hooks object exists without overwriting other hook types
+    if !settings.get("hooks").map_or(false, |h| h.is_object()) {
+        settings["hooks"] = serde_json::json!({});
+    }
+
+    // Ensure hooks.PreToolUse array exists without overwriting other arrays
+    let hooks_obj = settings["hooks"].as_object_mut()
+        .context("hooks is not an object")?;
+
+    if !hooks_obj.get("PreToolUse").map_or(false, |p| p.is_array()) {
+        hooks_obj.insert("PreToolUse".to_string(), serde_json::json!([]));
     }
 
     // Build absolute path for the hook
@@ -381,36 +421,47 @@ fn update_settings_json(claude_dir: &std::path::Path, hook_filename: &str) -> Re
     // Matcher should ALWAYS be "Bash" - that's the Claude Code tool name
     let matcher = "Bash";
 
-    // Clean up ALL existing aureus-rewrite hooks (removes duplicates)
+    // Get the PreToolUse array
     let pre_tool_uses = settings["hooks"]["PreToolUse"].as_array_mut()
-        .context("Invalid hooks.PreToolUse format")?;
+        .context("hooks.PreToolUse is not an array")?;
 
-    let filtered_hooks: Vec<_> = pre_tool_uses.iter()
-        .filter(|entry| {
-            // Keep entries that are NOT aureus-rewrite hooks
-            !entry.get("hooks")
-                .and_then(|h| h.as_array())
-                .map(|hooks| {
-                    hooks.iter().any(|h| {
-                        h.get("type")
-                            .and_then(|t| t.as_str())
-                            .map(|t| t == "command")
-                            .unwrap_or(false)
-                            && h.get("command")
+    // Check if aureus hook already exists (deduplicate)
+    let has_aureus = pre_tool_uses.iter().any(|entry| {
+        entry.get("hooks")
+            .and_then(|h| h.as_array())
+            .map(|hooks| {
+                hooks.iter().any(|h| {
+                    h.get("command")
+                        .and_then(|c| c.as_str())
+                        .map(|c| c.contains("aureus-rewrite"))
+                        .unwrap_or(false)
+                })
+            })
+            .unwrap_or(false)
+    });
+
+    if has_aureus {
+        // Remove existing aureus hooks (to replace with fresh one)
+        let filtered: Vec<_> = pre_tool_uses.iter()
+            .filter(|entry| {
+                !entry.get("hooks")
+                    .and_then(|h| h.as_array())
+                    .map(|hooks| {
+                        hooks.iter().any(|h| {
+                            h.get("command")
                                 .and_then(|c| c.as_str())
                                 .map(|c| c.contains("aureus-rewrite"))
                                 .unwrap_or(false)
+                        })
                     })
-                })
-                .unwrap_or(false)
-        })
-        .cloned()
-        .collect();
+                    .unwrap_or(false)
+            })
+            .cloned()
+            .collect();
+        *pre_tool_uses = filtered;
+    }
 
-    // Replace with filtered hooks (no duplicates)
-    *pre_tool_uses = filtered_hooks;
-
-    // Add the single clean hook - insert BEFORE rtk-rewrite for priority
+    // Build the aureus hook entry
     let aureus_hook = serde_json::json!({
         "matcher": matcher,
         "hooks": [{
@@ -420,7 +471,7 @@ fn update_settings_json(claude_dir: &std::path::Path, hook_filename: &str) -> Re
         }]
     });
 
-    // Find position to insert (before rtk-rewrite if exists)
+    // Find position to insert (before rtk-rewrite if exists, for priority)
     let insert_pos = pre_tool_uses.iter()
         .position(|entry| {
             entry.get("hooks")
@@ -442,9 +493,18 @@ fn update_settings_json(claude_dir: &std::path::Path, hook_filename: &str) -> Re
         pre_tool_uses.push(aureus_hook);
     }
 
-    fs::write(&settings_path, serde_json::to_string_pretty(&settings)?)
+    // Write back preserving all other settings
+    let output = serde_json::to_string_pretty(&settings)?;
+    fs::write(&settings_path, &output)
         .context("Failed to write settings.json")?;
-    println!("  ✓ {}", "Updated ~/.claude/settings.json (cleaned duplicates)".green());
+
+    // Verify the hook was actually written
+    let verify_content = fs::read_to_string(&settings_path)?;
+    if !verify_content.contains("aureus-rewrite") {
+        return Err(anyhow::anyhow!("Hook injection verification failed - aureus-rewrite not found in settings.json after write"));
+    }
+
+    println!("  ✓ {}", "Updated ~/.claude/settings.json (hooks injected)".green());
 
     Ok(())
 }
