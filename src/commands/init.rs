@@ -20,13 +20,13 @@ Aureus VRC provides **Versioned Release Convention** for Git workflows.
 ```bash
 # Create a versioned commit
 git commit -m "feat: new feature"
-# → Automatically rewritten to: aureus-vrc commit
+# → Automatically rewritten to: aureus commit
 
 # Suggest versions
-aureus-vrc suggest
+aureus suggest
 
 # Create a release
-aureus-vrc release --auto
+aureus release --auto
 ```
 
 ## Convention Configuration
@@ -81,7 +81,7 @@ fix bugfix patch corrected hotfix typo
 
 ### Project Name Detection
 
-1. **Config**: Set in `~/.aureus-vrc/config.toml`:
+1. **Config**: Set in `~/.aureus/config.toml`:
    ```toml
    [project]
    name = "MyProject"
@@ -89,34 +89,34 @@ fix bugfix patch corrected hotfix typo
 
 2. **Auto**: Falls back to directory name
 
-3. **Override**: Use `aureus-vrc commit --project CustomName`
+3. **Override**: Use `aureus commit --project CustomName`
 
 ## Commands Reference
 
 | Command | Description |
 |---------|-------------|
-| `aureus-vrc commit -m "msg"` | Create versioned commit |
-| `aureus-vrc amend -m "more info"` | Amend last commit (same version) |
-| `aureus-vrc release --auto` | Create release with tag |
-| `aureus-vrc suggest` | Show version suggestions |
-| `aureus-vrc config set project.name X` | Set project name |
-| `aureus-vrc hooks status` | Check hooks status |
+| `aureus commit -m "msg"` | Create versioned commit |
+| `aureus amend -m "more info"` | Amend last commit (same version) |
+| `aureus release --auto` | Create release with tag |
+| `aureus suggest` | Show version suggestions |
+| `aureus config set project.name X` | Set project name |
+| `aureus hooks status` | Check hooks status |
 
 ## Hook Behavior
 
 The `PreToolUse` hook (Node.js module) intercepts:
-- `git commit -m "message"` → `aureus-vrc commit -m "message"`
-- `git commit` (no message) → `aureus-vrc commit` (prompts for message)
-- `git commit --amend` → `aureus-vrc commit --amend`
+- `git commit -m "message"` → `aureus commit -m "message"`
+- `git commit` (no message) → `aureus commit` (prompts for message)
+- `git commit --amend` → `aureus commit --amend`
 
-To bypass: `git commit --no-verify` or use `aureus-vrc commit` directly.
+To bypass: `git commit --no-verify` or use `aureus commit` directly.
 
 ## Hook File
 
 Hook location: `~/.claude/hooks/aureus-rewrite.cjs`
 
 This Node.js module integrates with Claude Code's hook system to transparently
-rewrite git commands to aureus-vrc commands.
+rewrite git commands to aureus commands.
 
 ## Token Savings
 
@@ -130,7 +130,7 @@ Using Aureus saves tokens by:
 
 const HOOK_SCRIPT_NODE: &str = r#"/**
  * Aureus VRC Auto-Rewrite Hook for Claude Code
- * Transparently rewrites git commit → aureus-vrc commit
+ * Transparently rewrites git commit → aureus commit
  */
 
 const { execSync } = require('child_process');
@@ -146,21 +146,21 @@ function preToolUse(context, toolName, toolInput) {
         return;
     }
 
-    // Check if aureus-vrc is available
+    // Check if aureus is available
     let hasAureus = false;
     try {
-        execSync('aureus-vrc --version', { stdio: 'ignore' });
+        execSync('aureus --version', { stdio: 'ignore' });
         hasAureus = true;
     } catch {
-        return; // aureus-vrc not installed
+        return; // aureus not installed
     }
 
     if (!hasAureus) {
         return;
     }
 
-    // Don't modify if already aureus-vrc
-    if (/^aureus-vrc\s+commit/.test(command)) {
+    // Don't modify if already aureus
+    if (/^aureus\s+commit/.test(command)) {
         return;
     }
 
@@ -174,8 +174,8 @@ function preToolUse(context, toolName, toolInput) {
     const match = command.match(/^git\s+commit(\s+.*)$/);
     const args = match ? match[1].trim() : '';
 
-    // Rewrite to aureus-vrc
-    const rewritten = `aureus-vrc commit${args ? ' ' + args : ''}`;
+    // Rewrite to aureus
+    const rewritten = `aureus commit${args ? ' ' + args : ''}`;
 
     return {
         permissionDecision: 'allow',
@@ -256,7 +256,7 @@ fn init_global(force: bool, no_hooks: bool) -> Result<()> {
     println!("{}", "Next steps:".bold());
     println!("  1. Restart Claude Code");
     println!("  2. Try: {}", "git commit -m \"feat: new feature\"".cyan());
-    println!("     → Will be rewritten to aureus-vrc commit automatically");
+    println!("     → Will be rewritten to aureus commit automatically");
 
     Ok(())
 }

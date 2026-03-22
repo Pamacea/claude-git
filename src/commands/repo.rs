@@ -104,7 +104,7 @@ fn cmd_info() -> Result<()> {
         println!("  Hooks: {}", if repo.hooks_enabled { "enabled" } else { "disabled" });
     } else {
         println!("  {}", "Repository is not tracked.".yellow());
-        println!("  Use {} to track it.", "aureus-vrc repo track <name>".cyan());
+        println!("  Use {} to track it.", "aureus repo track <name>".cyan());
     }
 
     Ok(())

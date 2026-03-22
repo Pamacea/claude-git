@@ -5,8 +5,8 @@ use clap::{Parser, Subcommand, ValueEnum, Args};
 #[derive(Parser)]
 #[command(name = "aureus")]
 #[command(about = "Aureus - Versioned Release Convention CLI", long_about = None)]
-#[command(version = "0.11.1")]
-#[command(author = "Yanis <yanis@example.com>")]
+#[command(version = "0.12.0")]
+#[command(author = "Oalacea <oalacea@proton.me>")]
 #[command(propagate_version = true)]
 pub struct CliArgs {
     /// Verbosity level (-v, -vv, -vvv)

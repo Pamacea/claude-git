@@ -27,7 +27,7 @@ pub fn execute(shell: String) -> Result<()> {
 fn bash_completion() -> String {
     let mut buf = String::new();
 
-    writeln!(buf, "# bash completion for aureus-vrc").unwrap();
+    writeln!(buf, "# bash completion for aureus").unwrap();
     writeln!(buf, "_aureus_vrc_completion() {{").unwrap();
     writeln!(buf, "    local cur prev words cword").unwrap();
     writeln!(buf, "    _init_completion || return").unwrap();
@@ -64,7 +64,7 @@ fn bash_completion() -> String {
     writeln!(buf, "    esac").unwrap();
     writeln!(buf, "}}").unwrap();
     writeln!(buf).unwrap();
-    writeln!(buf, "complete -F _aureus_vrc_completion aureus-vrc").unwrap();
+    writeln!(buf, "complete -F _aureus_vrc_completion aureus").unwrap();
     writeln!(buf, "complete -F _aureus_vrc_completion aureus").unwrap();
 
     buf
@@ -73,7 +73,7 @@ fn bash_completion() -> String {
 fn zsh_completion() -> String {
     let mut buf = String::new();
 
-    writeln!(buf, "# zsh completion for aureus-vrc").unwrap();
+    writeln!(buf, "# zsh completion for aureus").unwrap();
     writeln!(buf, "_aureus_vrc() {{").unwrap();
     writeln!(buf, "    local -a commands").unwrap();
     writeln!(buf, "    commands=(").unwrap();
@@ -112,7 +112,7 @@ fn zsh_completion() -> String {
     writeln!(buf, "    esac").unwrap();
     writeln!(buf, "}}").unwrap();
     writeln!(buf).unwrap();
-    writeln!(buf, "compdef _aureus_vrc aureus-vrc").unwrap();
+    writeln!(buf, "compdef _aureus_vrc aureus").unwrap();
     writeln!(buf, "compdef _aureus_vrc aureus").unwrap();
 
     buf
@@ -121,27 +121,27 @@ fn zsh_completion() -> String {
 fn fish_completion() -> String {
     let mut buf = String::new();
 
-    writeln!(buf, "# fish completion for aureus-vrc").unwrap();
-    writeln!(buf, "complete -c aureus-vrc -f").unwrap();
+    writeln!(buf, "# fish completion for aureus").unwrap();
+    writeln!(buf, "complete -c aureus -f").unwrap();
     writeln!(buf).unwrap();
-    writeln!(buf, "complete -c aureus-vrc -n __fish_use_subcommand -a commit -d 'Create versioned commit'").unwrap();
-    writeln!(buf, "complete -c aureus-vrc -n '__fish_seen_subcommand_from commit' -l message -s m -d 'Commit message'").unwrap();
-    writeln!(buf, "complete -c aureus-vrc -n '__fish_seen_subcommand_from commit' -l type -s t -d 'Commit type' -x -a '{{RELEASE UPDATE PATCH}}'").unwrap();
+    writeln!(buf, "complete -c aureus -n __fish_use_subcommand -a commit -d 'Create versioned commit'").unwrap();
+    writeln!(buf, "complete -c aureus -n '__fish_seen_subcommand_from commit' -l message -s m -d 'Commit message'").unwrap();
+    writeln!(buf, "complete -c aureus -n '__fish_seen_subcommand_from commit' -l type -s t -d 'Commit type' -x -a '{{RELEASE UPDATE PATCH}}'").unwrap();
     writeln!(buf).unwrap();
-    writeln!(buf, "complete -c aureus-vrc -n __fish_use_subcommand -a amend -d 'Amend last commit'").unwrap();
-    writeln!(buf, "complete -c aureus-vrc -n '__fish_seen_subcommand_from amend' -l message -s m -d 'Additional message'").unwrap();
+    writeln!(buf, "complete -c aureus -n __fish_use_subcommand -a amend -d 'Amend last commit'").unwrap();
+    writeln!(buf, "complete -c aureus -n '__fish_seen_subcommand_from amend' -l message -s m -d 'Additional message'").unwrap();
     writeln!(buf).unwrap();
-    writeln!(buf, "complete -c aureus-vrc -n __fish_use_subcommand -a release -d 'Create release'").unwrap();
-    writeln!(buf, "complete -c aureus-vrc -n '__fish_seen_subcommand_from release' -l auto -d 'Auto-detect version'").unwrap();
+    writeln!(buf, "complete -c aureus -n __fish_use_subcommand -a release -d 'Create release'").unwrap();
+    writeln!(buf, "complete -c aureus -n '__fish_seen_subcommand_from release' -l auto -d 'Auto-detect version'").unwrap();
     writeln!(buf).unwrap();
-    writeln!(buf, "complete -c aureus-vrc -n __fish_use_subcommand -a init -d 'Initialize for Claude Code'").unwrap();
-    writeln!(buf, "complete -c aureus-vrc -n '__fish_seen_subcommand_from init' -l global -s g -d 'Initialize globally'").unwrap();
+    writeln!(buf, "complete -c aureus -n __fish_use_subcommand -a init -d 'Initialize for Claude Code'").unwrap();
+    writeln!(buf, "complete -c aureus -n '__fish_seen_subcommand_from init' -l global -s g -d 'Initialize globally'").unwrap();
     writeln!(buf).unwrap();
-    writeln!(buf, "complete -c aureus-vrc -n __fish_use_subcommand -a update -d 'Update to latest version'").unwrap();
-    writeln!(buf, "complete -c aureus-vrc -n '__fish_seen_subcommand_from update' -l force -d 'Force update'").unwrap();
+    writeln!(buf, "complete -c aureus -n __fish_use_subcommand -a update -d 'Update to latest version'").unwrap();
+    writeln!(buf, "complete -c aureus -n '__fish_seen_subcommand_from update' -l force -d 'Force update'").unwrap();
     writeln!(buf).unwrap();
-    writeln!(buf, "complete -c aureus-vrc -n __fish_use_subcommand -a completion -d 'Generate completion'").unwrap();
-    writeln!(buf, "complete -c aureus-vrc -n '__fish_seen_subcommand_from completion' -k __fish_seen_subcommand_from -l bash -l zsh -l fish -l powershell -l elvish").unwrap();
+    writeln!(buf, "complete -c aureus -n __fish_use_subcommand -a completion -d 'Generate completion'").unwrap();
+    writeln!(buf, "complete -c aureus -n '__fish_seen_subcommand_from completion' -k __fish_seen_subcommand_from -l bash -l zsh -l fish -l powershell -l elvish").unwrap();
 
     buf
 }
@@ -149,8 +149,8 @@ fn fish_completion() -> String {
 fn powershell_completion() -> String {
     let mut buf = String::new();
 
-    writeln!(buf, "# PowerShell completion for aureus-vrc").unwrap();
-    writeln!(buf, "Register-ArgumentCompleter -Native -CommandName aureus-vrc -ScriptBlock {{").unwrap();
+    writeln!(buf, "# PowerShell completion for aureus").unwrap();
+    writeln!(buf, "Register-ArgumentCompleter -Native -CommandName aureus -ScriptBlock {{").unwrap();
     writeln!(buf, "    param($wordToComplete, $commandAst, $cursorPosition)").unwrap();
     writeln!(buf, "    $command = $commandAst.CommandElements[0].Extent.Text").unwrap();
     writeln!(buf).unwrap();
@@ -179,8 +179,8 @@ fn powershell_completion() -> String {
 fn elvish_completion() -> String {
     let mut buf = String::new();
 
-    writeln!(buf, "# elvish completion for aureus-vrc").unwrap();
-    writeln!(buf, "edit:completion:command:aureus-vrc = [{{ grc }}] {{").unwrap();
+    writeln!(buf, "# elvish completion for aureus").unwrap();
+    writeln!(buf, "edit:completion:command:aureus = [{{ grc }}] {{").unwrap();
     writeln!(buf, "    @cmds = [commit amend release suggest init update completion]").unwrap();
     writeln!(buf).unwrap();
     writeln!(buf, "    if (eq (count $grc) 1) {{").unwrap();

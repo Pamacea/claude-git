@@ -1,6 +1,6 @@
 [package]
-name = "aureus-vrc"
-version = "0.11.5"
+name = "oalacea-aureus"
+version = "0.12.0"
 edition = "2021"
 authors = ["Yanis"]
 description = "Aureus VRC - Versioned Release Convention CLI for Git workflow automation"
@@ -13,7 +13,7 @@ categories = ["development-tools", "command-line-utilities"]
 include = ["LICENSE", "README.md", "CHANGELOG.md", "src/**/*.rs", "Cargo.toml"]
 
 [[bin]]
-name = "aureus-vrc"
+name = "aureus"
 path = "src/main.rs"
 
 [dependencies]

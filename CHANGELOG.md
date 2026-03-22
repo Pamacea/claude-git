@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.12.0] - 2026-03-23
+
+### Changed
+- **BREAKING: Rename** — Crate renamed from `aureus-vrc` to `oalacea-aureus`
+- **BREAKING: Binary name** — Command renamed from `aureus-vrc` to `aureus` for shorter usage
+- **Install command** — Use `cargo install oalacea-aureus` instead of `cargo install aureus-vrc`
+
+### Fixed
+- **Hook conflict** — Removed RTK interception of `aureus-vrc` (now `aureus`)
+- **Hook reliability** — Updated all hooks to use new `aureus` command name
+
+### Migration
+- Run `aureus init --global --force` to update hooks after upgrading
+- Old `aureus-vrc` binary is automatically removed
+
+---
+
 ## [0.11.5] - 2026-03-18
 
 ### Fixed

@@ -7,7 +7,7 @@ use std::env;
 use crate::cli::UpdateCommand;
 
 #[cfg(test)]
-const CRATES_API: &str = "https://crates.io/api/v1/crates/aureus-vrc";
+const CRATES_API: &str = "https://crates.io/api/v1/crates/oalacea-aureus";
 const CURRENT_VERSION: &str = env!("CARGO_PKG_VERSION");
 
 pub fn execute(cmd: UpdateCommand) -> Result<()> {
@@ -31,7 +31,7 @@ fn check_version() -> Result<()> {
                 println!("  {} {}", "Current:".dimmed(), CURRENT_VERSION);
                 println!("  {} {}", "Latest:".green().bold(), latest);
                 println!();
-                println!("  Update with: {}", "cargo install aureus-vrc --force".cyan());
+                println!("  Update with: {}", "cargo install oalacea-aureus --force".cyan());
                 println!();
             } else {
                 println!("  {} {}", "✓".green(), "Already up to date!".dimmed());
@@ -75,7 +75,7 @@ fn update_self(force: bool) -> Result<()> {
 
     // Show installation instructions
     println!("  {}", "To update, run:".cyan());
-    println!("    {}", "cargo install aureus-vrc --force".bold());
+    println!("    {}", "cargo install oalacea-aureus --force".bold());
     println!();
     println!("  {}", "Or from source:".cyan());
     println!("    {}", format!("cargo install --git https://github.com/Pamacea/aureus").bold());
